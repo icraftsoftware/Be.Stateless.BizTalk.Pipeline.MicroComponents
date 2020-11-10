@@ -16,6 +16,7 @@
 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;
 
@@ -23,6 +24,8 @@ namespace Be.Stateless.BizTalk.MicroComponent
 {
 	public interface IMicroComponent
 	{
+		[SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API.")]
+		[SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Public API.")]
 		IBaseMessage Execute(IPipelineContext pipelineContext, IBaseMessage message);
 	}
 }

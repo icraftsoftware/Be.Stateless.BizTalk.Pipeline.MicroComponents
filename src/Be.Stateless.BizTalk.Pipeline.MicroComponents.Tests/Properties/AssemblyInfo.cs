@@ -16,11 +16,6 @@
 
 #endregion
 
-namespace Be.Stateless.BizTalk.Component
-{
-	internal static class Constants
-	{
-		internal const string MICRO_COMPONENT_ELEMENT_NAME = "mComponent";
-		internal const string MICRO_COMPONENT_TYPE_ATTRIBUTE_NAME = "name";
-	}
-}
+using Xunit;
+
+[assembly: CollectionBehavior(DisableTestParallelization = true)]

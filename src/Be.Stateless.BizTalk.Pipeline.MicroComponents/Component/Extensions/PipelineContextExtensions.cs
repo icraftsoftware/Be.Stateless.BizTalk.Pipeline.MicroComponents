@@ -88,14 +88,12 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 			catch (COMException exception)
 			{
 				documentSpec = null;
-				if ((uint) exception.ErrorCode == E_SCHEMA_NOT_FOUND) return false;
+				if ((uint) exception.ErrorCode == (uint) HResult.ErrorSchemaNotFound) return false;
 				if (_logger.IsWarnEnabled) _logger.Warn($"SafeGetDocumentSpecByType({docType}) has failed.", exception);
 				throw;
 			}
 		}
 
-		// Error Code = 'Finding the document specification by message type "..." failed. Verify the schema deployed properly.'
-		internal const uint E_SCHEMA_NOT_FOUND = 0xC0C01300;
 		private static readonly ILog _logger = LogManager.GetLogger(typeof(PipelineContextExtensions));
 	}
 }

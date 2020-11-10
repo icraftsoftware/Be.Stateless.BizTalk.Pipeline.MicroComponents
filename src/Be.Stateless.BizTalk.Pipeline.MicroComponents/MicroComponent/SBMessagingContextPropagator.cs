@@ -19,7 +19,6 @@
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.ContextProperties.Extensions;
 using Be.Stateless.BizTalk.Message.Extensions;
-using Be.Stateless.BizTalk.MicroComponent.Extensions;
 using Be.Stateless.Extensions;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;

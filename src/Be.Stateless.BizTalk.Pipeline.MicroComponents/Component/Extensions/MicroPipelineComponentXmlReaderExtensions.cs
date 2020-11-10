@@ -63,6 +63,7 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 			return component;
 		}
 
+		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
 		public static bool IsMicroPipelineComponent(this XmlReader reader)
 		{
 			if (reader == null) throw new ArgumentNullException(nameof(reader));

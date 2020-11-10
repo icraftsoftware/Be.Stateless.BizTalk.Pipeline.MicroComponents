@@ -16,7 +16,6 @@
 
 #endregion
 
-using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using Be.Stateless.BizTalk.MicroComponent;
 using Be.Stateless.Xml;
@@ -32,14 +31,13 @@ namespace Be.Stateless.BizTalk.Component
 
 		#region Base Class Member Overrides
 
-		[SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
 		public override void WriteStartElement(string prefix, string localName, string ns)
 		{
 			base.WriteStartElement(prefix, localName, ns);
 			// relieve micro pipeline components from having to deal with surrounding mComponent XML element
 			if (localName == Constants.MICRO_COMPONENT_ELEMENT_NAME)
 			{
-				WriteAttributeString(Constants.MICRO_COMPONENT_TYPE_ATTRIBUTE_NAME, _component.GetType().AssemblyQualifiedName);
+				WriteAttributeString(Constants.MICRO_COMPONENT_TYPE_ATTRIBUTE_NAME, _component.GetType().AssemblyQualifiedName!);
 			}
 		}
 
