@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.IO.Compression;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.BizTalk.Stream;
@@ -88,6 +89,8 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
 			MessageMock.Object.BodyPart.Data.Should().BeOfType<ZipOutputStream>();
+			var archive = new ZipArchive(MessageMock.Object.BodyPart.Data);
+			archive.Entries[0].Name.Should().Be(System.IO.Path.GetFileName(location));
 		}
 
 		[Fact]
@@ -95,8 +98,9 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			var sut = new ZipEncoder();
 
-			Action(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object)).Should().Throw<InvalidOperationException>().WithMessage(
-				"BizTalkFactoryProperties.OutboundTransportLocation has to be set in context in order to determine zip entry name.");
+			Action(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
+				.Should().Throw<InvalidOperationException>()
+				.WithMessage("BizTalkFactoryProperties.OutboundTransportLocation has to be set in context in order to determine zip entry name.");
 		}
 	}
 }
