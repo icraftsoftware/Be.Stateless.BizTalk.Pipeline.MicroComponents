@@ -20,9 +20,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Be.Stateless.BizTalk.Component.Extensions;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
+using Be.Stateless.BizTalk.MicroComponent.Extensions;
 using Be.Stateless.BizTalk.Schema;
 using Be.Stateless.BizTalk.Stream;
 using Be.Stateless.BizTalk.Unit.MicroComponent;
@@ -147,7 +147,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			}
 			using (var reader = builder.GetReaderAtContent())
 			{
-				Action(() => reader.DeserializeMicroPipelineComponent()).Should().NotThrow();
+				Action(() => reader.DeserializeMicroComponent()).Should().NotThrow();
 			}
 		}
 

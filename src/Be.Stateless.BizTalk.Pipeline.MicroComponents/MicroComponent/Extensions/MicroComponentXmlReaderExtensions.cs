@@ -21,49 +21,49 @@ using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using System.Xml.Serialization;
-using Be.Stateless.BizTalk.MicroComponent;
 using Be.Stateless.Xml.Extensions;
 using Be.Stateless.Xml.Serialization;
 
-namespace Be.Stateless.BizTalk.Component.Extensions
+namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 {
-	public static class MicroPipelineComponentXmlReaderExtensions
+	public static class MicroComponentXmlReaderExtensions
 	{
 		[SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global", Justification = "typeof(IXmlSerializable).IsAssignableFrom(component) has been checked before cast.")]
-		public static IMicroComponent DeserializeMicroPipelineComponent(this XmlReader reader)
+		public static IMicroComponent DeserializeMicroComponent(this XmlReader reader)
 		{
 			if (reader == null) throw new ArgumentNullException(nameof(reader));
 			reader.AssertStartElement(Constants.MICRO_COMPONENT_ELEMENT_NAME);
-			var microPipelineComponentType = Type.GetType(reader.GetMandatoryAttribute(Constants.MICRO_COMPONENT_TYPE_ATTRIBUTE_NAME), true);
-			if (!typeof(IMicroComponent).IsAssignableFrom(microPipelineComponentType))
-				throw new ConfigurationErrorsException($"{microPipelineComponentType.AssemblyQualifiedName} does not implement {nameof(IMicroComponent)}.");
+			var microComponentType = Type.GetType(reader.GetMandatoryAttribute(Constants.MICRO_COMPONENT_TYPE_ATTRIBUTE_NAME), true);
+			if (!typeof(IMicroComponent).IsAssignableFrom(microComponentType))
+				throw new ConfigurationErrorsException($"{microComponentType.AssemblyQualifiedName} does not implement {nameof(IMicroComponent)}.");
 
 			// reset position to an element as required to call ReadSubtree()
 			reader.MoveToElement();
-			var microPipelineComponentXmlSubtree = reader.ReadSubtree();
+			var microComponentXmlSubtree = reader.ReadSubtree();
 
 			IMicroComponent component;
-			if (typeof(IXmlSerializable).IsAssignableFrom(microPipelineComponentType))
+			if (typeof(IXmlSerializable).IsAssignableFrom(microComponentType))
 			{
-				component = (IMicroComponent) Activator.CreateInstance(microPipelineComponentType);
-				// relieve micro pipeline components from having to deal with surrounding mComponent XML element
-				microPipelineComponentXmlSubtree.MoveToContent();
+				component = (IMicroComponent) Activator.CreateInstance(microComponentType);
+				// relieve micro components from having to deal with surrounding mComponent XML element
+				microComponentXmlSubtree.MoveToContent();
 				reader.ReadStartElement(Constants.MICRO_COMPONENT_ELEMENT_NAME);
-				((IXmlSerializable) component).ReadXml(microPipelineComponentXmlSubtree);
+				((IXmlSerializable) component).ReadXml(microComponentXmlSubtree);
 			}
 			else
 			{
 				var overrides = new XmlAttributeOverrides();
-				overrides.Add(microPipelineComponentType, new XmlAttributes { XmlRoot = new XmlRootAttribute(Constants.MICRO_COMPONENT_ELEMENT_NAME) });
-				var serializer = CachingXmlSerializerFactory.Create(microPipelineComponentType, overrides);
-				component = (IMicroComponent) serializer.Deserialize(microPipelineComponentXmlSubtree);
+				overrides.Add(microComponentType, new XmlAttributes { XmlRoot = new XmlRootAttribute(Constants.MICRO_COMPONENT_ELEMENT_NAME) });
+				var serializer = CachingXmlSerializerFactory.Create(microComponentType, overrides);
+				component = (IMicroComponent) serializer.Deserialize(microComponentXmlSubtree);
 			}
 
 			reader.Skip();
 			return component;
 		}
 
-		public static bool IsMicroPipelineComponent(this XmlReader reader)
+		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
+		public static bool IsMicroComponent(this XmlReader reader)
 		{
 			if (reader == null) throw new ArgumentNullException(nameof(reader));
 			return reader.IsStartElement(Constants.MICRO_COMPONENT_ELEMENT_NAME);

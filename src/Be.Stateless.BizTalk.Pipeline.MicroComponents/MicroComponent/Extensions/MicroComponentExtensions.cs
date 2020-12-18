@@ -19,13 +19,12 @@
 using System;
 using System.Xml;
 using System.Xml.Serialization;
-using Be.Stateless.BizTalk.MicroComponent;
 using Be.Stateless.Xml.Serialization;
 using Be.Stateless.Xml.Serialization.Extensions;
 
-namespace Be.Stateless.BizTalk.Component.Extensions
+namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 {
-	public static class MicroPipelineComponentExtensions
+	public static class MicroComponentExtensions
 	{
 		public static void Serialize(this IMicroComponent component, XmlWriter writer)
 		{
@@ -33,9 +32,9 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 			var overrides = new XmlAttributeOverrides();
 			overrides.Add(component.GetType(), new XmlAttributes { XmlRoot = new XmlRootAttribute(Constants.MICRO_COMPONENT_ELEMENT_NAME) });
 			var serializer = CachingXmlSerializerFactory.Create(component.GetType(), overrides);
-			using (var microPipelineComponentDedicatedXmlWriter = new MicroPipelineComponentXmlWriter(writer, component))
+			using (var microComponentXmlWriter = new MicroComponentXmlWriter(writer, component))
 			{
-				serializer.SerializeWithoutDefaultNamespaces(microPipelineComponentDedicatedXmlWriter, component);
+				serializer.SerializeWithoutDefaultNamespaces(microComponentXmlWriter, component);
 			}
 		}
 	}

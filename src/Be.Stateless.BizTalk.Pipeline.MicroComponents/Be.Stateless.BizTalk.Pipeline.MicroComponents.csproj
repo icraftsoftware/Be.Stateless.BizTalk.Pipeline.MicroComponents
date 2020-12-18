@@ -16,9 +16,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#system-variables -->
-    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">true</ContinuousIntegrationBuild>
-    <Deterministic>true</Deterministic>
     <GeneratePackageOnBuild Condition=" '$(GeneratePackageOnBuild)' == '' ">false</GeneratePackageOnBuild>
     <IsPackable>true</IsPackable>
     <PackageId>$(AssemblyTitle)</PackageId>
@@ -41,17 +38,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.0.20314.35561" />
-    <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.20296.42669" />
-    <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.0.20303.30374" />
-    <PackageReference Include="Be.Stateless.Stream" Version="2.0.20296.38697" />
-    <PackageReference Include="Be.Stateless.Xml" Version="2.0.20296.38810" />
+    <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.0.20338.28883" />
+    <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.20338.38034" />
+    <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.0.20338.28966" />
+    <PackageReference Include="Be.Stateless.Stream" Version="2.0.20338.28746" />
+    <PackageReference Include="Be.Stateless.Xml" Version="2.0.20338.28820" />
     <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="log4net" Version="2.0.12" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -3,18 +3,15 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <RootNamespace>Be.Stateless.BizTalk</RootNamespace>
-    <AssemblyTitle>Be.Stateless.BizTalk.Pipeline.MicroComponents.Tests</AssemblyTitle>
-    <Description>Unit tests for BizTalk.Factory's micro pipeline's micro components for general purpose BizTalk Server development.</Description>
+    <AssemblyTitle>Be.Stateless.BizTalk.Pipeline.MicroComponents.XUnit.Tests</AssemblyTitle>
+    <Description>Unit tests for BizTalk.Factory's micro pipeline's micro components XUnit-based test library for general purpose BizTalk Server development.</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Zip\message.zip" />
+    <None Include="..\..\.settings\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.14.0" />
-    <PackageReference Include="Be.Stateless.BizTalk.Stream.Unit" Version="2.0.20338.28966" />
-    <PackageReference Include="Be.Stateless.Common.Unit" Version="2.0.20338.28706" />
     <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,9 +20,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
-    <PackageReference Include="Moq" Version="4.15.2" />
     <PackageReference Include="xunit.core" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
@@ -34,13 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\.settings\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Be.Stateless.BizTalk.Pipeline.MicroComponents.Unit\Be.Stateless.BizTalk.Pipeline.MicroComponents.Unit.csproj" />
     <ProjectReference Include="..\Be.Stateless.BizTalk.Pipeline.MicroComponents.XUnit\Be.Stateless.BizTalk.Pipeline.MicroComponents.XUnit.csproj" />
-    <ProjectReference Include="..\Be.Stateless.BizTalk.Pipeline.MicroComponents\Be.Stateless.BizTalk.Pipeline.MicroComponents.csproj" />
   </ItemGroup>
 
 </Project>

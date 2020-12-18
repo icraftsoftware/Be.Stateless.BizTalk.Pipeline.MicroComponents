@@ -20,14 +20,27 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Be.Stateless.BizTalk.Component.Extensions;
 using Be.Stateless.BizTalk.ContextProperties;
-using Be.Stateless.BizTalk.Message.Extensions;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;
 
-namespace Be.Stateless.BizTalk.MicroComponent.Extensions
+namespace Be.Stateless.BizTalk.Message.Extensions
 {
 	public static class BaseMessageExtensions
 	{
+		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
+		public static void EnsureFileOutboundTransport(this IBaseMessage message)
+		{
+			if (message == null) throw new ArgumentNullException(nameof(message));
+			message.Context.EnsureFileOutboundTransport();
+		}
+
+		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
+		public static void EnsureSftpOutboundTransport(this IBaseMessage message)
+		{
+			if (message == null) throw new ArgumentNullException(nameof(message));
+			message.Context.EnsureSftpOutboundTransport();
+		}
+
 		public static string GetOrProbeMessageType(this IBaseMessage message, IPipelineContext pipelineContext)
 		{
 			if (message == null) throw new ArgumentNullException(nameof(message));

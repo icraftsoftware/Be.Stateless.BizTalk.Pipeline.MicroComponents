@@ -16,16 +16,40 @@
 
 #endregion
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
+using Be.Stateless.BizTalk.MicroComponent;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;
 
-namespace Be.Stateless.BizTalk.MicroComponent
+namespace Be.Stateless.BizTalk.Dummies.MicroComponent
 {
-	public interface IMicroComponent
+	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Required by XML serialization")]
+	public class DummyMicroComponentWithCustomXmlSerialization : IMicroComponent, IXmlSerializable
 	{
-		[SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public API.")]
-		[SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Public API.")]
-		IBaseMessage Execute(IPipelineContext pipelineContext, IBaseMessage message);
+		#region IMicroComponent Members
+
+		public IBaseMessage Execute(IPipelineContext pipelineContext, IBaseMessage message)
+		{
+			throw new NotSupportedException();
+		}
+
+		#endregion
+
+		#region IXmlSerializable Members
+
+		public XmlSchema GetSchema()
+		{
+			return null;
+		}
+
+		public void ReadXml(XmlReader reader) { }
+
+		public void WriteXml(XmlWriter writer) { }
+
+		#endregion
 	}
 }

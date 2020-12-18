@@ -15,8 +15,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">true</ContinuousIntegrationBuild>
-    <Deterministic>true</Deterministic>
     <GeneratePackageOnBuild Condition=" '$(GeneratePackageOnBuild)' == '' ">false</GeneratePackageOnBuild>
     <IsPackable>true</IsPackable>
     <PackageId>$(AssemblyTitle)</PackageId>
@@ -40,18 +38,18 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.14.0" />
-    <PackageReference Include="Be.Stateless.BizTalk.Messaging.Unit" Version="2.0.20296.42669" />
+    <PackageReference Include="Be.Stateless.BizTalk.Messaging.Unit" Version="2.0.20338.38034" />
     <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; compile; build; native; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="log4net" Version="2.0.12" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Moq" Version="4.14.7" />
+    <PackageReference Include="Moq" Version="4.15.2" />
   </ItemGroup>
 
   <ItemGroup>

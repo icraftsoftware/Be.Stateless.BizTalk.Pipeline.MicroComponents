@@ -16,7 +16,7 @@
 
 #endregion
 
-namespace Be.Stateless.BizTalk.Component
+namespace Be.Stateless.BizTalk.MicroComponent
 {
 	internal static class Constants
 	{

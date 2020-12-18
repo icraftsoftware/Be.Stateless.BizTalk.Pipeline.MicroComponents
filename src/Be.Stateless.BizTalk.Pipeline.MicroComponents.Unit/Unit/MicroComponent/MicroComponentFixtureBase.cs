@@ -18,7 +18,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Be.Stateless.BizTalk.Component.Extensions;
+using Be.Stateless.BizTalk.Component;
 using Be.Stateless.BizTalk.MicroComponent;
 using Microsoft.BizTalk.Component.Interop;
 using Moq;
@@ -40,8 +40,8 @@ namespace Be.Stateless.BizTalk.Unit.MicroComponent
 		protected Mock<IPipelineContext> PipelineContextMock { get; private set; }
 
 		/// <summary>
-		/// <see cref="MicroComponentFixtureBase{T}"/> initialization to be called either by an xUnit fixture's constructor or
-		/// a NUnit fixture's SetUp method.
+		/// <see cref="MicroComponentFixtureBase{T}"/> initialization to be called either by an xUnit fixture's constructor or a
+		/// NUnit fixture's SetUp method.
 		/// </summary>
 		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
 		[SuppressMessage("Usage", "CA2201:Do not raise reserved exception types", Justification = "Emulate actual BizTalk runtime.")]
@@ -55,7 +55,7 @@ namespace Be.Stateless.BizTalk.Unit.MicroComponent
 				.Callback<string>(
 					t => throw new COMException(
 						$"Finding the document specification by message type \"{t}\" failed. Verify the schema deployed properly.",
-						unchecked((int) PipelineContextExtensions.E_SCHEMA_NOT_FOUND)));
+						unchecked((int) HResult.ErrorSchemaNotFound)));
 		}
 	}
 }

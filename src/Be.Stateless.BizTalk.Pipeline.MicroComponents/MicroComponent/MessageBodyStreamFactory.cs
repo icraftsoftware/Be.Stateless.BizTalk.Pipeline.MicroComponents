@@ -30,9 +30,9 @@ using Microsoft.BizTalk.Message.Interop;
 namespace Be.Stateless.BizTalk.MicroComponent
 {
 	/// <summary>
-	/// Micro pipeline component that replaces the <see cref="Stream"/> of the current message's <see
-	/// cref="IBaseMessage.BodyPart"/> by a new one whose creation is delegated to either a contextual or statically
-	/// configurable <see cref="IMessageBodyStreamFactory"/> plugin.
+	/// Micro component that replaces the <see cref="Stream"/> of the current message's <see cref="IBaseMessage.BodyPart"/> by a
+	/// new one whose creation is delegated to either a contextual or statically configurable <see
+	/// cref="IMessageBodyStreamFactory"/> plugin.
 	/// </summary>
 	public class MessageBodyStreamFactory : IMicroComponent
 	{

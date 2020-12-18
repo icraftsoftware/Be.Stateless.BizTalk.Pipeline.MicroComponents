@@ -19,9 +19,9 @@
 using System.IO;
 using System.Text;
 using System.Xml;
-using Be.Stateless.BizTalk.Component.Extensions;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
+using Be.Stateless.BizTalk.MicroComponent.Extensions;
 using Be.Stateless.BizTalk.Schema;
 using Be.Stateless.BizTalk.Schema.Annotation;
 using Be.Stateless.BizTalk.Unit.MicroComponent;
@@ -101,7 +101,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				+ "</Extractors></mComponent>";
 			using (var reader = XmlReader.Create(new StringStream(xml)))
 			{
-				var propertyExtractor = (ContextPropertyExtractor) reader.DeserializeMicroPipelineComponent();
+				var propertyExtractor = (ContextPropertyExtractor) reader.DeserializeMicroComponent();
 
 				propertyExtractor.Extractors.Precedence.Should().Be(ExtractorPrecedence.Pipeline);
 				propertyExtractor.Extractors.Should().BeEquivalentTo(
@@ -228,8 +228,8 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[Fact]
 		public void Serialize()
 		{
-			var microPipelineComponentType = typeof(ContextPropertyExtractor);
-			var xml = $"<mComponent name=\"{microPipelineComponentType.AssemblyQualifiedName}\"><Extractors>"
+			var microComponentType = typeof(ContextPropertyExtractor);
+			var xml = $"<mComponent name=\"{microComponentType.AssemblyQualifiedName}\"><Extractors>"
 				+ $"<s0:Properties precedence=\"pipeline\" xmlns:s0=\"{SchemaAnnotationCollection.NAMESPACE}\" xmlns:s1=\"{BizTalkFactoryProperties.EnvironmentTag.Namespace}\">"
 				+ "<s1:EnvironmentTag value=\"environment-tag\" />"
 				+ "</s0:Properties>"
