@@ -24,7 +24,6 @@ using System.Xml;
 using System.Xml.Serialization;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
-using Be.Stateless.BizTalk.MicroComponent.Extensions;
 using Be.Stateless.BizTalk.Stream;
 using Be.Stateless.Extensions;
 using Be.Stateless.Xml;

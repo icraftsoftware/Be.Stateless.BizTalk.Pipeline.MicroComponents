@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Be.Stateless.BizTalk.Component.Extensions;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
+using Be.Stateless.BizTalk.MicroComponent.Extensions;
 using Be.Stateless.BizTalk.Schema;
 using Be.Stateless.BizTalk.Stream;
 using Be.Stateless.BizTalk.Unit.MicroComponent;
@@ -31,7 +31,7 @@ using BTS;
 using FluentAssertions;
 using Moq;
 using Xunit;
-using static Be.Stateless.Unit.DelegateFactory;
+using static FluentAssertions.FluentActions;
 
 namespace Be.Stateless.BizTalk.MicroComponent
 {
@@ -41,7 +41,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		public void BuildXmlTranslationSetWithNoTranslationInContext()
 		{
 			var sut = new XmlTranslator {
-				Translations = new XmlTranslationSet {
+				Translations = new() {
 					Override = false,
 					Items = new[] {
 						new XmlNamespaceTranslation("sourceUrn1", "urn:test1"),
@@ -66,7 +66,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			MessageMock.Setup(c => c.GetProperty(BizTalkFactoryProperties.XmlTranslations))
 				.Returns(
 					XmlTranslationSetConverter.Serialize(
-						new XmlTranslationSet {
+						new() {
 							Override = true,
 							Items = new[] {
 								new XmlNamespaceTranslation("sourceUrn5", "urn05")
@@ -74,7 +74,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 						}));
 
 			var sut = new XmlTranslator {
-				Translations = new XmlTranslationSet {
+				Translations = new() {
 					Override = false,
 					Items = new[] {
 						new XmlNamespaceTranslation("sourceUrn1", "urn:test1"),
@@ -102,7 +102,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			using (var dataStream = new MemoryStream(Encoding.UTF8.GetBytes("<root xmlns='urn:ns'></root>")))
 			{
 				var sut = new XmlTranslator {
-					Translations = new XmlTranslationSet {
+					Translations = new() {
 						Items = new[] {
 							new XmlNamespaceTranslation("urn:ns", "urn:ns:translated")
 						}
@@ -122,7 +122,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			using (var dataStream = new MemoryStream(Encoding.UTF8.GetBytes("<root xmlns='urn:ns'></root>")))
 			{
 				var sut = new XmlTranslator {
-					Translations = new XmlTranslationSet {
+					Translations = new() {
 						Items = new[] {
 							new XmlNamespaceTranslation("urn:ns", "urn:ns:translated")
 						}
@@ -141,13 +141,13 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		public void RoundTripXmlSerialization()
 		{
 			var builder = new StringBuilder();
-			using (var writer = XmlWriter.Create(builder, new XmlWriterSettings { OmitXmlDeclaration = true }))
+			using (var writer = XmlWriter.Create(builder, new() { OmitXmlDeclaration = true }))
 			{
 				new XmlTranslator().Serialize(writer);
 			}
 			using (var reader = builder.GetReaderAtContent())
 			{
-				Action(() => reader.DeserializeMicroPipelineComponent()).Should().NotThrow();
+				Invoking(() => reader.DeserializeMicroComponent()).Should().NotThrow();
 			}
 		}
 

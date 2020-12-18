@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using Be.Stateless.BizTalk.ContextProperties;
@@ -28,13 +29,23 @@ using Xunit;
 
 namespace Be.Stateless.BizTalk.MicroComponent
 {
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class SBMessagingContextPropagatorFixture : MicroComponentFixture<SBMessagingContextPropagator>
 	{
+		#region Setup/Teardown
+
+		public SBMessagingContextPropagatorFixture()
+		{
+			MessageMock.Setup(m => m.GetProperty(SBMessagingProperties.CustomBrokeredMessagePropertyNamespace)).Returns(CUSTOM_BROKERED_MESSAGE_NAMESPACE);
+		}
+
+		#endregion
+
 		[Fact]
 		public void BizTalkPropertiesAreOnlyPropagatedOutward()
 		{
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.InboundTransportLocation)).Returns("inbound-transport-location");
-			MessageMock.Setup(m => m.GetProperty(BizTalkFactoryProperties.CorrelationId)).Returns(Guid.NewGuid().ToString);
+			MessageMock.Setup(m => m.Context.Read(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace)).Returns(Guid.NewGuid().ToString);
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.MessageType)).Returns("urn:ns#root");
 
 			var sut = new SBMessagingContextPropagator();
@@ -61,6 +72,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			const string messageType = "urn:ns#root";
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.InboundTransportLocation)).Returns("inbound-transport-location");
+			MessageMock.Setup(m => m.Context.Read(nameof(BtsProperties.MessageType), CUSTOM_BROKERED_MESSAGE_NAMESPACE)).Returns(messageType);
 			MessageMock.Setup(m => m.GetProperty(BizTalkFactoryProperties.MessageType)).Returns(messageType);
 
 			var sut = new SBMessagingContextPropagator();
@@ -78,8 +90,8 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var sut = new SBMessagingContextPropagator();
 			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
-			MessageMock.Verify(m => m.Promote(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
-			MessageMock.Verify(m => m.SetProperty(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
+			MessageMock.Verify(m => m.Context.Promote(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()), Times.Never);
+			MessageMock.Verify(m => m.Context.Write(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()), Times.Never);
 		}
 
 		[Fact]
@@ -107,8 +119,8 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var sut = new SBMessagingContextPropagator();
 			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
-			MessageMock.Verify(m => m.Promote(BizTalkFactoryProperties.CorrelationId, token), Times.Once);
-			MessageMock.Verify(m => m.SetProperty(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
+			MessageMock.Verify(m => m.Context.Promote(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, token), Times.Once);
+			MessageMock.Verify(m => m.Context.Write(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()), Times.Never);
 		}
 
 		[Fact]
@@ -119,7 +131,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				MessageMock.Object.BodyPart.Data = inputStream;
 				var token = Guid.NewGuid().ToString();
 				MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
-				MessageMock.Setup(m => m.GetProperty(BizTalkFactoryProperties.CorrelationId)).Returns(token);
+				MessageMock.Setup(m => m.Context.Read(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace)).Returns(token);
 
 				var sut = new SBMessagingContextPropagator();
 				sut.Execute(PipelineContextMock.Object, MessageMock.Object);
@@ -186,7 +198,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var sut = new SBMessagingContextPropagator();
 			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
-			MessageMock.Verify(m => m.SetProperty(BizTalkFactoryProperties.MessageType, messageType), Times.Once);
+			MessageMock.Verify(m => m.Context.Write(nameof(BtsProperties.MessageType), CUSTOM_BROKERED_MESSAGE_NAMESPACE, messageType), Times.Once);
 		}
 
 		[Fact]
@@ -202,11 +214,15 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				var sut = new SBMessagingContextPropagator();
 				sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
-				MessageMock.Verify(m => m.SetProperty(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
-				MessageMock.Verify(m => m.Promote(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
+				MessageMock.Verify(
+					m => m.Context.Promote(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()),
+					Times.Never);
+				MessageMock.Verify(m => m.Context.Write(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()), Times.Never);
 				MessageMock.Verify(m => m.SetProperty(BtsProperties.MessageType, It.IsAny<string>()), Times.Never);
 				MessageMock.Verify(m => m.Promote(BtsProperties.MessageType, It.IsAny<string>()), Times.Never);
 			}
 		}
+
+		private const string CUSTOM_BROKERED_MESSAGE_NAMESPACE = "urn:custom-brokered-message-namespace";
 	}
 }

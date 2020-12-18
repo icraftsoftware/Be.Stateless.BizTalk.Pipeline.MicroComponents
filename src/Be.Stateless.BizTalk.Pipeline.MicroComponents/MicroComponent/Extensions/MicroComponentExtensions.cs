@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,23 +19,22 @@
 using System;
 using System.Xml;
 using System.Xml.Serialization;
-using Be.Stateless.BizTalk.MicroComponent;
 using Be.Stateless.Xml.Serialization;
 using Be.Stateless.Xml.Serialization.Extensions;
 
-namespace Be.Stateless.BizTalk.Component.Extensions
+namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 {
-	public static class MicroPipelineComponentExtensions
+	public static class MicroComponentExtensions
 	{
 		public static void Serialize(this IMicroComponent component, XmlWriter writer)
 		{
 			if (component == null) throw new ArgumentNullException(nameof(component));
 			var overrides = new XmlAttributeOverrides();
-			overrides.Add(component.GetType(), new XmlAttributes { XmlRoot = new XmlRootAttribute(Constants.MICRO_COMPONENT_ELEMENT_NAME) });
+			overrides.Add(component.GetType(), new() { XmlRoot = new(Constants.MICRO_COMPONENT_ELEMENT_NAME) });
 			var serializer = CachingXmlSerializerFactory.Create(component.GetType(), overrides);
-			using (var microPipelineComponentDedicatedXmlWriter = new MicroPipelineComponentXmlWriter(writer, component))
+			using (var microComponentXmlWriter = new MicroComponentXmlWriter(writer, component))
 			{
-				serializer.SerializeWithoutDefaultNamespaces(microPipelineComponentDedicatedXmlWriter, component);
+				serializer.SerializeWithoutDefaultNamespaces(microComponentXmlWriter, component);
 			}
 		}
 	}

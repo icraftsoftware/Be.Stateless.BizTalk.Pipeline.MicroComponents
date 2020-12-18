@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Xml.Serialization;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
@@ -30,7 +29,7 @@ using Microsoft.BizTalk.Message.Interop;
 namespace Be.Stateless.BizTalk.MicroComponent
 {
 	/// <summary>
-	/// Micro pipeline component that replaces the <see cref="Stream"/> of the current message's <see
+	/// Micro component that replaces the <see cref="System.IO.Stream"/> of the current message's <see
 	/// cref="IBaseMessage.BodyPart"/> by a new one whose creation is delegated to either a contextual or statically
 	/// configurable <see cref="IMessageBodyStreamFactory"/> plugin.
 	/// </summary>
@@ -49,8 +48,8 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		#endregion
 
 		/// <summary>
-		/// The type of the <see cref="IMessageBodyStreamFactory"/> plugin that will be called to create the <see cref="Stream"/>
-		/// of the message's <see cref="IBaseMessage.BodyPart"/>.
+		/// The type of the <see cref="IMessageBodyStreamFactory"/> plugin that will be called to create the <see
+		/// cref="System.IO.Stream"/> of the message's <see cref="IBaseMessage.BodyPart"/>.
 		/// </summary>
 		[XmlElement("Factory", typeof(RuntimeTypeXmlSerializer))]
 		public Type FactoryType { get; set; }

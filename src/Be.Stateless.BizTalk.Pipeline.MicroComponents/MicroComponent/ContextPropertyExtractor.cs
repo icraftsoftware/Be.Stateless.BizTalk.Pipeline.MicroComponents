@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ using System.Linq;
 using System.Xml.Serialization;
 using Be.Stateless.BizTalk.Component.Extensions;
 using Be.Stateless.BizTalk.Message.Extensions;
-using Be.Stateless.BizTalk.MicroComponent.Extensions;
 using Be.Stateless.BizTalk.Schema.Annotation;
 using Be.Stateless.BizTalk.Schema.Extensions;
 using Be.Stateless.BizTalk.Stream;
@@ -172,7 +171,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[XmlElement("Extractors")]
 		public PropertyExtractorCollectionSerializerSurrogate ExtractorSerializerSurrogate
 		{
-			get => new PropertyExtractorCollectionSerializerSurrogate(Extractors);
+			get => new(Extractors);
 			set => Extractors = value;
 		}
 
@@ -180,7 +179,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			var messageType = message.GetOrProbeMessageType(pipelineContext);
 			var schemaMetadata = pipelineContext.GetSchemaMetadataByType(messageType, false);
-			return schemaMetadata.GetExtractors().Union(Extractors);
+			return schemaMetadata.GetPropertyExtractors().Union(Extractors);
 		}
 	}
 }

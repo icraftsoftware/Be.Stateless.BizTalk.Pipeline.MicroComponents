@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Be.Stateless.BizTalk.Component.Extensions;
+using Be.Stateless.BizTalk.Component;
 using Be.Stateless.BizTalk.MicroComponent;
 using Microsoft.BizTalk.Component.Interop;
 using Moq;
@@ -40,22 +40,21 @@ namespace Be.Stateless.BizTalk.Unit.MicroComponent
 		protected Mock<IPipelineContext> PipelineContextMock { get; private set; }
 
 		/// <summary>
-		/// <see cref="MicroComponentFixtureBase{T}"/> initialization to be called either by an xUnit fixture's constructor or
-		/// a NUnit fixture's SetUp method.
+		/// <see cref="MicroComponentFixtureBase{T}"/> initialization to be called either by an xUnit fixture's constructor or a
+		/// NUnit fixture's SetUp method.
 		/// </summary>
 		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
-		[SuppressMessage("Usage", "CA2201:Do not raise reserved exception types", Justification = "Emulate actual BizTalk runtime.")]
 		protected void Initialize()
 		{
-			MessageMock = new MessageMock { DefaultValue = DefaultValue.Mock };
-			PipelineContextMock = new Mock<IPipelineContext> { DefaultValue = DefaultValue.Mock };
+			MessageMock = new() { DefaultValue = DefaultValue.Mock };
+			PipelineContextMock = new() { DefaultValue = DefaultValue.Mock };
 			// default behavior analogous to actual IPipelineContext implementation
 			PipelineContextMock
 				.Setup(pc => pc.GetDocumentSpecByType(It.IsAny<string>()))
 				.Callback<string>(
 					t => throw new COMException(
 						$"Finding the document specification by message type \"{t}\" failed. Verify the schema deployed properly.",
-						unchecked((int) PipelineContextExtensions.E_SCHEMA_NOT_FOUND)));
+						unchecked((int) HResult.ErrorSchemaNotFound)));
 		}
 	}
 }

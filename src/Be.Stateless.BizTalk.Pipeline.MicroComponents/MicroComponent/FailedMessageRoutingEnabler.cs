@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 #endregion
 
-using Be.Stateless.BizTalk.ContextProperties;
-using Be.Stateless.BizTalk.Message.Extensions;
+using Be.Stateless.BizTalk.ContextProperties.Extensions;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;
 
@@ -38,8 +37,8 @@ namespace Be.Stateless.BizTalk.MicroComponent
 
 		public IBaseMessage Execute(IPipelineContext pipelineContext, IBaseMessage message)
 		{
-			if (EnableFailedMessageRouting) message.SetProperty(BtsProperties.RouteMessageOnFailure, true);
-			if (SuppressRoutingFailureReport) message.SetProperty(BtsProperties.SuppressRoutingFailureDiagnosticInfo, true);
+			if (EnableFailedMessageRouting) message.RouteMessageOnFailure();
+			if (SuppressRoutingFailureReport) message.SuppressRoutingFailureDiagnosticInfo();
 			return message;
 		}
 

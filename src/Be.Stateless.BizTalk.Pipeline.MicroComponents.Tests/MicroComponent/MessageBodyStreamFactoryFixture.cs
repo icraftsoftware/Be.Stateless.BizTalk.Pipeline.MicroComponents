@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,21 +27,21 @@ namespace Be.Stateless.BizTalk.MicroComponent
 	public class MessageBodyStreamFactoryFixture : MicroComponentFixture<MessageBodyStreamFactory>
 	{
 		[Fact]
-		public void MessageFactoryPluginIsExecuted()
+		public void MessageBodyStreamFactoryPluginIsExecuted()
 		{
-			var sut = new MessageBodyStreamFactory { FactoryType = typeof(MessageFactoryMockWrapper) };
+			var sut = new MessageBodyStreamFactory { FactoryType = typeof(MessageBodyStreamFactorySpy) };
 
 			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
-			MessageFactoryMockWrapper.MessageFactoryMock.Verify(m => m.Create(It.IsAny<IBaseMessage>()), Times.Once());
+			MessageBodyStreamFactorySpy.MessageBodyStreamFactoryMock.Verify(m => m.Create(It.IsAny<IBaseMessage>()), Times.Once());
 		}
 
-		private class MessageFactoryMockWrapper : IMessageBodyStreamFactory
+		private class MessageBodyStreamFactorySpy : IMessageBodyStreamFactory
 		{
-			static MessageFactoryMockWrapper()
+			static MessageBodyStreamFactorySpy()
 			{
-				MessageFactoryMock = new Mock<IMessageBodyStreamFactory>();
-				MessageFactoryMock
+				MessageBodyStreamFactoryMock = new();
+				MessageBodyStreamFactoryMock
 					.Setup(m => m.Create(It.IsAny<IBaseMessage>()))
 					.Returns(new MemoryStream());
 			}
@@ -50,12 +50,12 @@ namespace Be.Stateless.BizTalk.MicroComponent
 
 			public System.IO.Stream Create(IBaseMessage message)
 			{
-				return MessageFactoryMock.Object.Create(message);
+				return MessageBodyStreamFactoryMock.Object.Create(message);
 			}
 
 			#endregion
 
-			public static readonly Mock<IMessageBodyStreamFactory> MessageFactoryMock;
+			public static readonly Mock<IMessageBodyStreamFactory> MessageBodyStreamFactoryMock;
 		}
 	}
 }
