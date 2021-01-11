@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <RootNamespace>Be.Stateless.BizTalk</RootNamespace>
-    <AssemblyTitle>Be.Stateless.BizTalk.Pipeline.MicroComponents.XUnit.Tests</AssemblyTitle>
+    <AssemblyName>Be.Stateless.BizTalk.Pipeline.MicroComponents.XUnit.Tests</AssemblyName>
     <Description>Unit tests for BizTalk.Factory's micro pipeline's micro components XUnit-based test library for general purpose BizTalk Server development.</Description>
   </PropertyGroup>
 
@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.4">
+    <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

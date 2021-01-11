@@ -33,7 +33,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			MessageMock
 				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID))
-				.Returns("9d0e4341-4cce-4536-83fa-4a5040674ad6");
+				.Returns(BaseMessageContextMicroComponentExtensions.FileAdapterOutboundTransportClassId.ToString("D"));
 			MessageMock
 				.Setup(m => m.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation))
 				.Returns("file.txt");

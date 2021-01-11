@@ -34,7 +34,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		public void BizTalkPropertiesAreOnlyPropagatedOutward()
 		{
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.InboundTransportLocation)).Returns("inbound-transport-location");
-			MessageMock.Setup(m => m.GetProperty(BizTalkFactoryProperties.CorrelationId)).Returns(Guid.NewGuid().ToString);
+			MessageMock.Setup(m => m.Context.Read(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace)).Returns(Guid.NewGuid().ToString);
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.MessageType)).Returns("urn:ns#root");
 
 			var sut = new SBMessagingContextPropagator();
@@ -78,8 +78,8 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var sut = new SBMessagingContextPropagator();
 			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
-			MessageMock.Verify(m => m.Promote(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
-			MessageMock.Verify(m => m.SetProperty(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
+			MessageMock.Verify(m => m.Context.Promote(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()), Times.Never);
+			MessageMock.Verify(m => m.Context.Write(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()), Times.Never);
 		}
 
 		[Fact]
@@ -107,8 +107,8 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var sut = new SBMessagingContextPropagator();
 			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
-			MessageMock.Verify(m => m.Promote(BizTalkFactoryProperties.CorrelationId, token), Times.Once);
-			MessageMock.Verify(m => m.SetProperty(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
+			MessageMock.Verify(m => m.Context.Promote(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, token), Times.Once);
+			MessageMock.Verify(m => m.Context.Write(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()), Times.Never);
 		}
 
 		[Fact]
@@ -119,7 +119,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				MessageMock.Object.BodyPart.Data = inputStream;
 				var token = Guid.NewGuid().ToString();
 				MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
-				MessageMock.Setup(m => m.GetProperty(BizTalkFactoryProperties.CorrelationId)).Returns(token);
+				MessageMock.Setup(m => m.Context.Read(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace)).Returns(token);
 
 				var sut = new SBMessagingContextPropagator();
 				sut.Execute(PipelineContextMock.Object, MessageMock.Object);
@@ -202,8 +202,10 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				var sut = new SBMessagingContextPropagator();
 				sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
-				MessageMock.Verify(m => m.SetProperty(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
-				MessageMock.Verify(m => m.Promote(BizTalkFactoryProperties.CorrelationId, It.IsAny<string>()), Times.Never);
+				MessageMock.Verify(
+					m => m.Context.Promote(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()),
+					Times.Never);
+				MessageMock.Verify(m => m.Context.Write(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, It.IsAny<string>()), Times.Never);
 				MessageMock.Verify(m => m.SetProperty(BtsProperties.MessageType, It.IsAny<string>()), Times.Never);
 				MessageMock.Verify(m => m.Promote(BtsProperties.MessageType, It.IsAny<string>()), Times.Never);
 			}

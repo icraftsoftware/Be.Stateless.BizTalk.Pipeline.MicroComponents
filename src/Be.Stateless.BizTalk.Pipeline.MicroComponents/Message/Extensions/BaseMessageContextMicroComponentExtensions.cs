@@ -23,22 +23,23 @@ using Microsoft.BizTalk.Message.Interop;
 
 namespace Be.Stateless.BizTalk.Message.Extensions
 {
-	public static class BaseMessageContextExtensions
+	public static class BaseMessageContextMicroComponentExtensions
 	{
 		public static void EnsureFileOutboundTransport(this IBaseMessageContext context)
 		{
-			var fileAdapterOutboundTransportClassId = new Guid("9d0e4341-4cce-4536-83fa-4a5040674ad6");
 			var outboundTransportClassId = context.GetProperty(BtsProperties.OutboundTransportCLSID).IfNotNullOrEmpty(g => new Guid(g));
-			if (outboundTransportClassId != fileAdapterOutboundTransportClassId)
+			if (outboundTransportClassId != FileAdapterOutboundTransportClassId)
 				throw new InvalidOperationException("Outbound file transport is required on this leg of the message exchange pattern.");
 		}
 
 		public static void EnsureSftpOutboundTransport(this IBaseMessageContext context)
 		{
-			var msSftpAdapterOutboundTransportClassId = new Guid("c166a7e5-4f4c-4b02-a6f2-8be07e1fa786");
 			var outboundTransportClassId = context.GetProperty(BtsProperties.OutboundTransportCLSID).IfNotNullOrEmpty(g => new Guid(g));
-			if (outboundTransportClassId != msSftpAdapterOutboundTransportClassId)
+			if (outboundTransportClassId != SftpAdapterOutboundTransportClassId)
 				throw new InvalidOperationException("Outbound SFTP transport is required on this leg of the message exchange pattern.");
 		}
+
+		internal static readonly Guid FileAdapterOutboundTransportClassId = new Guid("9d0e4341-4cce-4536-83fa-4a5040674ad6");
+		internal static readonly Guid SftpAdapterOutboundTransportClassId = new Guid("c166a7e5-4f4c-4b02-a6f2-8be07e1fa786");
 	}
 }

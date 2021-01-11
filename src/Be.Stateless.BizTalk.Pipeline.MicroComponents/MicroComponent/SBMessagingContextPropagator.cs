@@ -17,7 +17,6 @@
 #endregion
 
 using Be.Stateless.BizTalk.ContextProperties;
-using Be.Stateless.BizTalk.ContextProperties.Extensions;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.Extensions;
 using Microsoft.BizTalk.Component.Interop;
@@ -32,13 +31,12 @@ namespace Be.Stateless.BizTalk.MicroComponent
 	/// <para>
 	/// For inbound messages, <see cref="SBMessagingProperties.CorrelationId">SBMessagingProperties.CorrelationId</see> and <see
 	/// cref="BizTalkFactoryProperties.MessageType">BizTalkFactoryProperties.MessageType</see>, if any, are respectively
-	/// promoted into BizTalk message context as <see
-	/// cref="BizTalkFactoryProperties.CorrelationId">BizTalkFactoryProperties.CorrelationId</see> and <see
+	/// promoted into BizTalk message context as <c>BizTalkFactoryProperties.CorrelationId</c> and <see
 	/// cref="BtsProperties.MessageType">BtsProperties.MessageType</see>.
 	/// </para>
 	/// <para>
-	/// For outbound messages, <see cref="BizTalkFactoryProperties.CorrelationId">BizTalkFactoryProperties.CorrelationId</see>
-	/// and <see cref="BtsProperties.MessageType">BtsProperties.MessageType</see>, if any, are respectively propagated as
+	/// For outbound messages, <c>BizTalkFactoryProperties.CorrelationId</c> and <see
+	/// cref="BtsProperties.MessageType">BtsProperties.MessageType</see>, if any, are respectively propagated as
 	/// <see cref="SBMessagingProperties.CorrelationId">SBMessagingProperties.CorrelationId</see>
 	/// and <see cref="BizTalkFactoryProperties.MessageType">BizTalkFactoryProperties.MessageType</see>.
 	/// </para>
@@ -52,14 +50,20 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			if (message.Direction().IsInbound())
 			{
 				var correlationId = message.GetProperty(SBMessagingProperties.CorrelationId);
-				if (!correlationId.IsNullOrEmpty()) message.PromoteCorrelationId(correlationId);
+				// use the native BTS API instead of the message.PromoteCorrelationId(correlationId) to not have a dependency on
+				// BizTalk.Schemas which would reversed the desired dependency order, i.e. from an artifact component
+				// (BizTalk.Schemas) to a runtime one (BizTalk.Pipeline.MicroComponents itself)
+				if (!correlationId.IsNullOrEmpty()) message.Context.Promote(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace, correlationId);
 				var messageType = message.GetProperty(BizTalkFactoryProperties.MessageType);
 				if (!messageType.IsNullOrEmpty()) message.Promote(BtsProperties.MessageType, messageType);
 			}
 			else
 			{
-				var correlationToken = message.GetProperty(BizTalkFactoryProperties.CorrelationId);
-				if (!correlationToken.IsNullOrEmpty()) message.SetProperty(SBMessagingProperties.CorrelationId, correlationToken);
+				// use the native BTS API instead of the message.GetProperty(BizTalkFactoryProperties.CorrelationId) to not have a
+				// dependency on BizTalk.Schemas which would reversed the desired dependency order, i.e. from an artifact component
+				// (BizTalk.Schemas) to a runtime one (BizTalk.Pipeline.MicroComponents itself)
+				var correlationId = (string) message.Context.Read(SBMessagingProperties.CorrelationId.Name, BizTalkFactoryProperties.MessageType.Namespace);
+				if (!correlationId.IsNullOrEmpty()) message.SetProperty(SBMessagingProperties.CorrelationId, correlationId);
 				var messageType = message.GetOrProbeMessageType(pipelineContext);
 				if (!messageType.IsNullOrEmpty()) message.SetProperty(BizTalkFactoryProperties.MessageType, messageType);
 			}

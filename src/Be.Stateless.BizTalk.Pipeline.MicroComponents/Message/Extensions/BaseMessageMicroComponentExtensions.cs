@@ -25,7 +25,7 @@ using Microsoft.BizTalk.Message.Interop;
 
 namespace Be.Stateless.BizTalk.Message.Extensions
 {
-	public static class BaseMessageExtensions
+	public static class BaseMessageMicroComponentExtensions
 	{
 		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
 		public static void EnsureFileOutboundTransport(this IBaseMessage message)
