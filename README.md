@@ -1,6 +1,6 @@
 ﻿# Be.Stateless.BizTalk.Pipeline.MicroComponents
 
-[![Build Status](https://dev.azure.com/icraftsoftware/be.stateless/_apis/build/status/Be.Stateless.BizTalk.Pipeline.MicroComponents%20Manual%20Release?branchName=master)](https://dev.azure.com/icraftsoftware/be.stateless/_build/latest?definitionId=666&branchName=master)
+[![Build Status](https://dev.azure.com/icraftsoftware/be.stateless/_apis/build/status/Be.Stateless.BizTalk.Pipeline.MicroComponents%20Manual%20Release?branchName=master)](https://dev.azure.com/icraftsoftware/be.stateless/_build/latest?definitionId=67&branchName=master)
 [![GitHub Release](https://img.shields.io/github/v/release/icraftsoftware/Be.Stateless.BizTalk.Pipeline.MicroComponents?label=Release)](https://github.com/icraftsoftware/Be.Stateless.BizTalk.Pipeline.MicroComponents/releases/latest)
 
 BizTalk.Factory's micro pipeline's micro components for general purpose BizTalk Server development.
