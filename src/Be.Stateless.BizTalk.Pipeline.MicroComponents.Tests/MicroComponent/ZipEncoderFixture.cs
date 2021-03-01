@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ using FluentAssertions;
 using Microsoft.BizTalk.Message.Interop;
 using Moq;
 using Xunit;
-using static Be.Stateless.Unit.DelegateFactory;
+using static FluentAssertions.FluentActions;
 
 namespace Be.Stateless.BizTalk.MicroComponent
 {
@@ -98,7 +98,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			var sut = new ZipEncoder();
 
-			Action(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
+			Invoking(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
 				.Should().Throw<InvalidOperationException>()
 				.WithMessage("BizTalkFactoryProperties.OutboundTransportLocation has to be set in context in order to determine zip entry name.");
 		}

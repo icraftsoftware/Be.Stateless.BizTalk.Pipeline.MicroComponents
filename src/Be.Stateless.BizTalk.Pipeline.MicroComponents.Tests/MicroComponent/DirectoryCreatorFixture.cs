@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.BizTalk.Unit.MicroComponent;
 using FluentAssertions;
 using Xunit;
-using static Be.Stateless.Unit.DelegateFactory;
+using static FluentAssertions.FluentActions;
 
 namespace Be.Stateless.BizTalk.MicroComponent
 {
@@ -39,7 +39,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				.Returns("file.txt");
 
 			var sut = new DirectoryCreator();
-			Action(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
+			Invoking(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
 				.Should().Throw<ArgumentNullException>()
 				.WithMessage("Value cannot be null.\r\nParameter name: path");
 		}
@@ -52,7 +52,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				.Returns("ee0e71a6-8945-4dd3-8770-f9e5495ddc7b");
 
 			var sut = new DirectoryCreator();
-			Action(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
+			Invoking(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
 				.Should().Throw<InvalidOperationException>()
 				.WithMessage("Outbound file transport is required on this leg of the message exchange pattern.");
 		}

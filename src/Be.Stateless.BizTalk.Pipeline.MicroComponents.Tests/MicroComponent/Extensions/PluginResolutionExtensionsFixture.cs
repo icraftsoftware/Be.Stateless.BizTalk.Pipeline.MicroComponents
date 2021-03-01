@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using FluentAssertions;
 using Microsoft.BizTalk.Message.Interop;
 using Xunit;
 using MessageMock = Be.Stateless.BizTalk.Unit.Message.Mock<Microsoft.BizTalk.Message.Interop.IBaseMessage>;
-using static Be.Stateless.Unit.DelegateFactory;
+using static FluentAssertions.FluentActions;
 
 namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 {
@@ -52,7 +52,7 @@ namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 		{
 			var type = typeof(ContextualMessageBodyStreamFactory);
 
-			Action(() => type.AsPlugin<IMessageBodyStreamFactory>()).Should().NotThrow();
+			Invoking(() => type.AsPlugin<IMessageBodyStreamFactory>()).Should().NotThrow();
 		}
 
 		[Fact]
@@ -60,7 +60,7 @@ namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 		{
 			var type = GetType();
 
-			Action(() => type.AsPlugin<IMessageBodyStreamFactory>()).Should()
+			Invoking(() => type.AsPlugin<IMessageBodyStreamFactory>()).Should()
 				.Throw<InvalidOperationException>()
 				.WithMessage($"The plugin type '{GetType().AssemblyQualifiedName}' does not support the type '{typeof(IMessageBodyStreamFactory).AssemblyQualifiedName}'.");
 		}
@@ -88,7 +88,7 @@ namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 		{
 			var type = typeof(ContextualMessageBodyStreamFactory);
 
-			Action(() => type.OfPluginType<IMessageBodyStreamFactory>()).Should().NotThrow();
+			Invoking(() => type.OfPluginType<IMessageBodyStreamFactory>()).Should().NotThrow();
 		}
 
 		[Fact]
@@ -96,7 +96,7 @@ namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 		{
 			var type = GetType();
 
-			Action(() => type.OfPluginType<IMessageBodyStreamFactory>()).Should()
+			Invoking(() => type.OfPluginType<IMessageBodyStreamFactory>()).Should()
 				.Throw<InvalidOperationException>()
 				.WithMessage($"The plugin type '{GetType().AssemblyQualifiedName}' does not support the type '{typeof(IMessageBodyStreamFactory).AssemblyQualifiedName}'.");
 		}

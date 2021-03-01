@@ -11,7 +11,6 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/icraftsoftware/Be.Stateless.BizTalk.Pipeline.MicroComponents</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <!-- embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
@@ -20,10 +19,8 @@
     <IsPackable>true</IsPackable>
     <PackageId>$(AssemblyName)</PackageId>
     <PackageDescription>$(Description)</PackageDescription>
-    <!--<PackageIconUrl>icon url prop</PackageIconUrl>-->
     <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
-    <!--<PackageReleaseNotes>release notes prop</PackageReleaseNotes>-->
-    <PackageTags>library extension utility</PackageTags>
+    <PackageTags>BizTalk pipeline component microcomponent</PackageTags>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
@@ -39,10 +36,11 @@
 
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.0.21007.39752" />
-    <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.21008.36224" />
-    <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.0.21008.32614" />
-    <PackageReference Include="Be.Stateless.Stream" Version="2.0.21005.40362" />
-    <PackageReference Include="Be.Stateless.Xml" Version="2.0.21005.41353" />
+    <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.21071.55312" />
+    <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.0.21071.54649" />
+    <PackageReference Include="Be.Stateless.Security" Version="2.0.21071.48839" />
+    <PackageReference Include="Be.Stateless.Stream" Version="2.0.21071.30174" />
+    <PackageReference Include="Be.Stateless.Xml" Version="2.0.21071.49651" />
     <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
