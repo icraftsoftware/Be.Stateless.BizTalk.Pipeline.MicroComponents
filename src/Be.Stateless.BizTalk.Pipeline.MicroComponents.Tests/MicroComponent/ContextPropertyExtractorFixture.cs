@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var schemaMetadata = SchemaMetadata.For<Any>();
 
 			using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes("<root xmlns='urn:ns'></root>")))
-			using (var contextPropertyAnnotationMockInjectionScope = new ContextPropertyAnnotationMockInjectionScope())
+			using (var contextPropertyAnnotationMockInjectionScope = new PropertyExtractorAnnotationMockInjectionScope())
 			{
 				contextPropertyAnnotationMockInjectionScope.Extractors = new PropertyExtractorCollection(
 					new XPathExtractor(BizTalkFactoryProperties.OutboundTransportLocation.QName, "/letter/*/to", ExtractionMode.Demote),
@@ -95,14 +95,14 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		public void Deserialize()
 		{
 			var xml = $"<mComponent name=\"{typeof(ContextPropertyExtractor).AssemblyQualifiedName}\"><Extractors>"
-				+ $"<s0:Properties precedence=\"pipeline\" xmlns:s0=\"{SchemaAnnotationCollection.NAMESPACE}\" xmlns:s1=\"{BizTalkFactoryProperties.ContextBuilderTypeName.Namespace}\">"
-				+ "<s1:ContextBuilderTypeName value=\"context-builder\" />"
-				+ "</s0:Properties>"
+				+ PropertyExtractorCollectionConverter.Serialize(
+					new PropertyExtractorCollection(
+						ExtractorPrecedence.Pipeline,
+						new ConstantExtractor(BizTalkFactoryProperties.ContextBuilderTypeName, "context-builder")))
 				+ "</Extractors></mComponent>";
 			using (var reader = XmlReader.Create(new StringStream(xml)))
 			{
 				var propertyExtractor = (ContextPropertyExtractor) reader.DeserializeMicroComponent();
-
 				propertyExtractor.Extractors.Precedence.Should().Be(ExtractorPrecedence.Pipeline);
 				propertyExtractor.Extractors.Should().BeEquivalentTo(
 					new ConstantExtractor(BizTalkFactoryProperties.ContextBuilderTypeName, "context-builder")
@@ -143,7 +143,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				"</s1:letter>";
 
 			using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(content)))
-			using (var contextPropertyAnnotationMockInjectionScope = new ContextPropertyAnnotationMockInjectionScope())
+			using (var contextPropertyAnnotationMockInjectionScope = new PropertyExtractorAnnotationMockInjectionScope())
 			{
 				var propertyExtractorMock = new Mock<PropertyExtractor>(BizTalkFactoryProperties.OutboundTransportLocation.QName, ExtractionMode.Clear) {
 					CallBase = true
@@ -228,22 +228,23 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[Fact]
 		public void Serialize()
 		{
-			var microComponentType = typeof(ContextPropertyExtractor);
-			var xml = $"<mComponent name=\"{microComponentType.AssemblyQualifiedName}\"><Extractors>"
-				+ $"<s0:Properties precedence=\"pipeline\" xmlns:s0=\"{SchemaAnnotationCollection.NAMESPACE}\" xmlns:s1=\"{BizTalkFactoryProperties.XmlTranslations.Namespace}\">"
-				+ "<s1:XmlTranslations value=\"xml-translations\" />"
-				+ "</s0:Properties>"
-				+ "</Extractors></mComponent>";
-
 			var builder = new StringBuilder();
 			using (var writer = XmlWriter.Create(builder, new XmlWriterSettings { OmitXmlDeclaration = true }))
 			{
 				var component = new ContextPropertyExtractor {
-					Extractors = new PropertyExtractorCollection(ExtractorPrecedence.Pipeline, new ConstantExtractor(BizTalkFactoryProperties.XmlTranslations, "xml-translations"))
+					Extractors = new PropertyExtractorCollection(
+						ExtractorPrecedence.Pipeline,
+						new ConstantExtractor(BizTalkFactoryProperties.XmlTranslations, "xml-translations"))
 				};
 				component.Serialize(writer);
 			}
-			builder.ToString().Should().Be(xml);
+			builder.ToString().Should().Be(
+				$"<mComponent name=\"{typeof(ContextPropertyExtractor).AssemblyQualifiedName}\"><Extractors>"
+				+ PropertyExtractorCollectionConverter.Serialize(
+					new PropertyExtractorCollection(
+						ExtractorPrecedence.Pipeline,
+						new ConstantExtractor(BizTalkFactoryProperties.XmlTranslations, "xml-translations")))
+				+ "</Extractors></mComponent>");
 		}
 	}
 }
