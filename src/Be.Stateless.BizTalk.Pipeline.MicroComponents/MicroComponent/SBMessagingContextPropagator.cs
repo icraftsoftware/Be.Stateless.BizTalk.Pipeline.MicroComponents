@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.Extensions;
@@ -41,6 +42,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 	/// and <see cref="BizTalkFactoryProperties.MessageType">BizTalkFactoryProperties.MessageType</see>.
 	/// </para>
 	/// </remarks>
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class SBMessagingContextPropagator : IMicroComponent
 	{
 		#region IMicroComponent Members

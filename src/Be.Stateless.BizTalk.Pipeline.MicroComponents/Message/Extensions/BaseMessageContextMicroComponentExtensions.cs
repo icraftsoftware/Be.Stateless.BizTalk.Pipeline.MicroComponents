@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ namespace Be.Stateless.BizTalk.Message.Extensions
 				throw new InvalidOperationException("Outbound SFTP transport is required on this leg of the message exchange pattern.");
 		}
 
-		internal static readonly Guid FileAdapterOutboundTransportClassId = new Guid("9d0e4341-4cce-4536-83fa-4a5040674ad6");
-		internal static readonly Guid SftpAdapterOutboundTransportClassId = new Guid("c166a7e5-4f4c-4b02-a6f2-8be07e1fa786");
+		internal static readonly Guid FileAdapterOutboundTransportClassId = new("9d0e4341-4cce-4536-83fa-4a5040674ad6");
+		internal static readonly Guid SftpAdapterOutboundTransportClassId = new("c166a7e5-4f4c-4b02-a6f2-8be07e1fa786");
 	}
 }

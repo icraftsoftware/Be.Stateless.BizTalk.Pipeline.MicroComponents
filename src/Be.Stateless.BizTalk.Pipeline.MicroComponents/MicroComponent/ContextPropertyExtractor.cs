@@ -171,7 +171,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[XmlElement("Extractors")]
 		public PropertyExtractorCollectionSerializerSurrogate ExtractorSerializerSurrogate
 		{
-			get => new PropertyExtractorCollectionSerializerSurrogate(Extractors);
+			get => new(Extractors);
 			set => Extractors = value;
 		}
 

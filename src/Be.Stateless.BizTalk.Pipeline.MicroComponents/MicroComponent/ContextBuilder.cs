@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 							message.BodyPart.WrapOriginalDataStream(
 								originalStream => {
 									var substitutionStream = new EventingReadStream(originalStream);
-									substitutionStream.AfterLastReadEvent += (src, args) => {
+									substitutionStream.AfterLastReadEvent += (_, _) => {
 										if (_logger.IsDebugEnabled) _logger.DebugFormat("Executing context builder plugin '{0}' that was scheduled for deferred execution.", BuilderType);
 										contextBuilder.Execute(message.Context);
 									};

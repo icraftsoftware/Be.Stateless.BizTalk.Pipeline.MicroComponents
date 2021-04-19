@@ -16,41 +16,33 @@
 
 #endregion
 
-using System;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Xml.Serialization;
-using Be.Stateless.BizTalk.MicroComponent;
-using Be.Stateless.BizTalk.Schema.Annotation;
+using Be.Stateless.BizTalk.ContextProperties;
+using Be.Stateless.BizTalk.ContextProperties.Extensions;
+using Be.Stateless.BizTalk.Message.Extensions;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;
 
-namespace Be.Stateless.BizTalk.Dummies.MicroComponent
+namespace Be.Stateless.BizTalk.MicroComponent
 {
-	public class DummyContextPropertyExtractor : IMicroComponent
+	/// <summary>
+	/// Prevent Microsoft BizTalk Server's SendPort Transport from performing any retries to send the message in case of
+	/// failures provided the property <see cref="BizTalkFactoryProperties.DisableTransportRetries"/> is present in the
+	/// message's context and has a value of <c>true</c>.
+	/// </summary>
+	public class TransportRetriesDisabler : IMicroComponent
 	{
 		#region IMicroComponent Members
 
 		public IBaseMessage Execute(IPipelineContext pipelineContext, IBaseMessage message)
 		{
-			throw new NotSupportedException();
+			var disableTransportRetries = message.GetProperty(BizTalkFactoryProperties.DisableTransportRetries);
+			if (disableTransportRetries.HasValue && disableTransportRetries.Value)
+			{
+				message.DisableTransportRetries();
+			}
+			return message;
 		}
 
 		#endregion
-
-		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-		public bool Enabled { get; set; }
-
-		[XmlIgnore]
-		public PropertyExtractorCollection Extractors { get; set; }
-
-		[Browsable(false)]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		[XmlElement("Extractors")]
-		public PropertyExtractorCollectionSerializerSurrogate ExtractorSerializerSurrogate
-		{
-			get => new(Extractors);
-			set => Extractors = value;
-		}
 	}
 }
