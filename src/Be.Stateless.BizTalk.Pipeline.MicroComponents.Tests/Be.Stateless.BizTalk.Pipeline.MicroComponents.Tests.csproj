@@ -12,10 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.16.0" />
-    <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21073.36728" />
-    <PackageReference Include="Be.Stateless.BizTalk.Stream.Unit" Version="2.0.21104.44616" />
-    <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.0">
+    <PackageReference Include="AutoFixture" Version="4.17.0" />
+    <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21163.28366" />
+    <PackageReference Include="Be.Stateless.BizTalk.Stream.Unit" Version="2.0.21171.57568" />
+    <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -24,7 +24,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="xunit.core" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
