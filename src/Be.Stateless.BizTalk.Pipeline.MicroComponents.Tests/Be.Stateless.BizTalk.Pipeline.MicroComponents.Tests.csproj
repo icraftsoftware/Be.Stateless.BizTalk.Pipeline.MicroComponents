@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21163.28366" />
-    <PackageReference Include="Be.Stateless.BizTalk.Stream.Unit" Version="2.0.21171.57568" />
+    <PackageReference Include="Be.Stateless.BizTalk.Stream.Unit" Version="2.0.21215.39558" />
     <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

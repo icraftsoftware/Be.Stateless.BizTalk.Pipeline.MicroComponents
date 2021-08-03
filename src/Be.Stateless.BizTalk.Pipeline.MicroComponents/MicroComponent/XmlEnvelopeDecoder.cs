@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using Be.Stateless.BizTalk.Component.Extensions;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.BizTalk.Stream;
 using log4net;
@@ -25,14 +26,7 @@ using Microsoft.BizTalk.Message.Interop;
 
 namespace Be.Stateless.BizTalk.MicroComponent
 {
-	/// <summary>
-	/// Pipeline component which decompresses the first entry of a Zip Archive. The component wraps the message's original
-	/// stream in the zip decompressing stream <see cref="ZipInputStream"/>.
-	/// </summary>
-	/// <remarks>
-	/// See <see cref="ZipInputStream"/> for details on the Zip Archive format supported.
-	/// </remarks>
-	public class ZipDecoder : IMicroComponent
+	public class XmlEnvelopeDecoder : IMicroComponent
 	{
 		#region IMicroComponent Members
 
@@ -40,17 +34,24 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			if (pipelineContext == null) throw new ArgumentNullException(nameof(pipelineContext));
 			if (message == null) throw new ArgumentNullException(nameof(message));
-			message.BodyPart.WrapOriginalDataStream(
-				originalStream => {
-					if (_logger.IsDebugEnabled) _logger.Debug($"Wrapping message stream in a {nameof(ZipInputStream)}.");
-					return new ZipInputStream(originalStream);
-				},
-				pipelineContext.ResourceTracker);
+
+			var messageType = message.ProbeMessageType(pipelineContext);
+			var schemaMetadata = pipelineContext.GetSchemaMetadataByType(messageType, false);
+			if (schemaMetadata.IsEnvelopeSchema)
+			{
+				// rewrite empty or partial envelope to prevent disassembler from throwing
+				message.BodyPart.WrapOriginalDataStream(
+					originalStream => {
+						if (_logger.IsDebugEnabled) _logger.Debug($"Wrapping message stream in an {nameof(XmlEnvelopeDecodingStream)}.");
+						return new XmlEnvelopeDecodingStream(originalStream, schemaMetadata.BodyXPath);
+					},
+					pipelineContext.ResourceTracker);
+			}
 			return message;
 		}
 
 		#endregion
 
-		private static readonly ILog _logger = LogManager.GetLogger(typeof(ZipDecoder));
+		private static readonly ILog _logger = LogManager.GetLogger(typeof(XmlEnvelopeDecoder));
 	}
 }
