@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -74,14 +74,16 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var result = sut.ConvertFrom(xml) as IEnumerable<IMicroComponent>;
 
 			result.Should().NotBeNull().And.BeEquivalentTo(
-				new DummyMicroComponentOne { One = "1", Two = "2" },
-				new DummyMicroComponentTwo { Six = "6", Ten = "9" },
-				new DummyMicroComponentTen {
-					Encoding = new UTF8Encoding(false),
-					Index = 10,
-					Requirements = XmlTranslationRequirements.Default,
-					Name = "DummyTen",
-					Plugin = typeof(DummyXmlTranslator)
+				new object[] {
+					new DummyMicroComponentOne { One = "1", Two = "2" },
+					new DummyMicroComponentTwo { Six = "6", Ten = "9" },
+					new DummyMicroComponentTen {
+						Encoding = new UTF8Encoding(false),
+						Index = 10,
+						Requirements = XmlTranslationRequirements.Default,
+						Name = "DummyTen",
+						Plugin = typeof(DummyXmlTranslator)
+					}
 				});
 		}
 
@@ -164,15 +166,16 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var deserialized = sut.ConvertFrom(xml) as IMicroComponent[];
 
 			deserialized.Should().BeEquivalentTo(
-				new DummyContextPropertyExtractor {
-					Enabled = true,
-					Extractors = new[] {
-						new XPathExtractor(new XmlQualifiedName("Property1", "urn"), "*/some-node"),
-						new XPathExtractor(new XmlQualifiedName("Property2", "urn"), "*/other-node", ExtractionMode.Promote)
-					}
-				},
-				new DummyMicroComponentOne { One = "1", Two = "2" }
-			);
+				new object[] {
+					new DummyContextPropertyExtractor {
+						Enabled = true,
+						Extractors = new[] {
+							new XPathExtractor(new XmlQualifiedName("Property1", "urn"), "*/some-node"),
+							new XPathExtractor(new XmlQualifiedName("Property2", "urn"), "*/other-node", ExtractionMode.Promote)
+						}
+					},
+					new DummyMicroComponentOne { One = "1", Two = "2" }
+				});
 		}
 
 		[Fact]
@@ -193,13 +196,15 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var deserialized = sut.ConvertFrom(xml) as IMicroComponent[];
 
 			deserialized.Should().BeEquivalentTo(
-				new DummyXmlTranslator {
-					Enabled = true,
-					Translations = new XmlTranslationSet {
-						Override = false,
-						Items = new[] {
-							new XmlNamespaceTranslation("sourceUrn1", "urn:test1"),
-							new XmlNamespaceTranslation("sourceUrn5", "urn:test5")
+				new object[] {
+					new DummyXmlTranslator {
+						Enabled = true,
+						Translations = new() {
+							Override = false,
+							Items = new[] {
+								new XmlNamespaceTranslation("sourceUrn1", "urn:test1"),
+								new XmlNamespaceTranslation("sourceUrn5", "urn:test5")
+							}
 						}
 					}
 				});
@@ -237,7 +242,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			var component = new DummyXmlTranslator {
 				Enabled = true,
-				Translations = new XmlTranslationSet {
+				Translations = new() {
 					Override = false,
 					Items = new[] {
 						new XmlNamespaceTranslation("sourceUrn1", "urn:test1"),

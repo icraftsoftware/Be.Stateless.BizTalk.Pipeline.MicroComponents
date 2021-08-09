@@ -84,7 +84,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		public void RoundTripXmlSerialization()
 		{
 			var builder = new StringBuilder();
-			using (var writer = XmlWriter.Create(builder, new XmlWriterSettings { OmitXmlDeclaration = true }))
+			using (var writer = XmlWriter.Create(builder, new() { OmitXmlDeclaration = true }))
 			{
 				new XmlEnvelopeDecoder().Serialize(writer);
 			}

@@ -47,7 +47,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes("<root xmlns='urn:ns'></root>")))
 			using (var contextPropertyAnnotationMockInjectionScope = new PropertyExtractorAnnotationMockInjectionScope())
 			{
-				contextPropertyAnnotationMockInjectionScope.Extractors = new PropertyExtractorCollection(
+				contextPropertyAnnotationMockInjectionScope.Extractors = new(
 					new XPathExtractor(BizTalkFactoryProperties.OutboundTransportLocation.QName, "/letter/*/to", ExtractionMode.Demote),
 					new XPathExtractor(BtsProperties.Operation.QName, "/letter/*/salutations"));
 
@@ -64,10 +64,11 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				var extractors = sut.BuildPropertyExtractorCollection(PipelineContextMock.Object, MessageMock.Object);
 
 				extractors.Should().BeEquivalentTo(
-					new XPathExtractor(BizTalkFactoryProperties.OutboundTransportLocation.QName, "/letter/*/to", ExtractionMode.Demote),
-					new XPathExtractor(BtsProperties.Operation.QName, "/letter/*/salutations"),
-					new XPathExtractor(BtsProperties.OutboundTransportLocation.QName, "/letter/*/paragraph")
-				);
+					new[] {
+						new XPathExtractor(BizTalkFactoryProperties.OutboundTransportLocation.QName, "/letter/*/to", ExtractionMode.Demote),
+						new XPathExtractor(BtsProperties.Operation.QName, "/letter/*/salutations"),
+						new XPathExtractor(BtsProperties.OutboundTransportLocation.QName, "/letter/*/paragraph")
+					});
 			}
 		}
 
@@ -96,7 +97,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			var xml = $"<mComponent name=\"{typeof(ContextPropertyExtractor).AssemblyQualifiedName}\"><Extractors>"
 				+ PropertyExtractorCollectionConverter.Serialize(
-					new PropertyExtractorCollection(
+					new(
 						ExtractorPrecedence.Pipeline,
 						new ConstantExtractor(BizTalkFactoryProperties.ContextBuilderTypeName, "context-builder")))
 				+ "</Extractors></mComponent>";
@@ -105,8 +106,9 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				var propertyExtractor = (ContextPropertyExtractor) reader.DeserializeMicroComponent();
 				propertyExtractor.Extractors.Precedence.Should().Be(ExtractorPrecedence.Pipeline);
 				propertyExtractor.Extractors.Should().BeEquivalentTo(
-					new ConstantExtractor(BizTalkFactoryProperties.ContextBuilderTypeName, "context-builder")
-				);
+					new[] {
+						new ConstantExtractor(BizTalkFactoryProperties.ContextBuilderTypeName, "context-builder")
+					});
 			}
 		}
 
@@ -155,7 +157,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 					CallBase = true
 				};
 
-				contextPropertyAnnotationMockInjectionScope.Extractors = new PropertyExtractorCollection(
+				contextPropertyAnnotationMockInjectionScope.Extractors = new(
 					propertyExtractorMock.Object,
 					constantExtractorMock.Object
 				);
@@ -229,10 +231,10 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		public void Serialize()
 		{
 			var builder = new StringBuilder();
-			using (var writer = XmlWriter.Create(builder, new XmlWriterSettings { OmitXmlDeclaration = true }))
+			using (var writer = XmlWriter.Create(builder, new() { OmitXmlDeclaration = true }))
 			{
 				var component = new ContextPropertyExtractor {
-					Extractors = new PropertyExtractorCollection(
+					Extractors = new(
 						ExtractorPrecedence.Pipeline,
 						new ConstantExtractor(BizTalkFactoryProperties.XmlTranslations, "xml-translations"))
 				};
@@ -241,7 +243,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			builder.ToString().Should().Be(
 				$"<mComponent name=\"{typeof(ContextPropertyExtractor).AssemblyQualifiedName}\"><Extractors>"
 				+ PropertyExtractorCollectionConverter.Serialize(
-					new PropertyExtractorCollection(
+					new(
 						ExtractorPrecedence.Pipeline,
 						new ConstantExtractor(BizTalkFactoryProperties.XmlTranslations, "xml-translations")))
 				+ "</Extractors></mComponent>");

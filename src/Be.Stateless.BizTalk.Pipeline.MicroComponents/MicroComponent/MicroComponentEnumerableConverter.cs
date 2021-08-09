@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 
 			try
 			{
-				using (var reader = XmlReader.Create(new StringReader(xml), new XmlReaderSettings { IgnoreWhitespace = true, IgnoreComments = true }))
+				using (var reader = XmlReader.Create(new StringReader(xml), new() { IgnoreWhitespace = true, IgnoreComments = true }))
 				{
 					reader.AssertStartElement(Constants.MICRO_COMPONENT_LIST_ELEMENT_NAME);
 					reader.ReadStartElement();
@@ -94,7 +94,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 
 			using (var stringWriter = new StringWriter())
 			using (var xmlTextWriter = new XmlTextWriter(stringWriter) { QuoteChar = '\'' })
-			using (var writer = XmlWriter.Create(xmlTextWriter, new XmlWriterSettings { OmitXmlDeclaration = true }))
+			using (var writer = XmlWriter.Create(xmlTextWriter, new() { OmitXmlDeclaration = true }))
 			{
 				writer.WriteStartElement(Constants.MICRO_COMPONENT_LIST_ELEMENT_NAME);
 				foreach (var component in components)

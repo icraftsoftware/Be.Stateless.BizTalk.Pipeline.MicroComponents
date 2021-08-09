@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 		{
 			var component = new DummyMicroComponentWithCustomXmlSerialization();
 			var builder = new StringBuilder();
-			using (var writer = XmlWriter.Create(builder, new XmlWriterSettings { OmitXmlDeclaration = true }))
+			using (var writer = XmlWriter.Create(builder, new() { OmitXmlDeclaration = true }))
 			{
 				component.Serialize(writer);
 			}
@@ -43,7 +43,7 @@ namespace Be.Stateless.BizTalk.MicroComponent.Extensions
 		{
 			var component = new DummyMicroComponentWithDefaultXmlSerialization();
 			var builder = new StringBuilder();
-			using (var writer = XmlWriter.Create(builder, new XmlWriterSettings { OmitXmlDeclaration = true }))
+			using (var writer = XmlWriter.Create(builder, new() { OmitXmlDeclaration = true }))
 			{
 				component.Serialize(writer);
 			}

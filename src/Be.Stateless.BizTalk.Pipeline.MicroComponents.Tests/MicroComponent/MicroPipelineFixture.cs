@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 #endregion
 
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using AutoFixture;
 using AutoFixture.Kernel;
 using Be.Stateless.BizTalk.Dummies.MicroComponent;
@@ -83,7 +84,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var sut = new MicroPipeline();
 			sut.LoadConfiguration(configuration);
 
-			sut.Components.Should().BeEquivalentTo(microComponents);
+			sut.Components.Should().BeEquivalentTo(microComponents.Cast<object>(), o => o.IncludingProperties());
 		}
 
 		[Fact]

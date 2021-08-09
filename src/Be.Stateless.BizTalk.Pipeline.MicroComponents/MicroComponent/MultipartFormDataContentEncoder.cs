@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ namespace Be.Stateless.BizTalk.MicroComponent
 					if (_logger.IsDebugEnabled) _logger.Debug("Wrapping message stream in a MultipartFormDataContentStream.");
 					var multipartFormDataContentStream = ContentName.IsNullOrEmpty()
 						? UseBodyPartNameAsContentName
-							? new MultipartFormDataContentStream(originalStream, message.BodyPartName)
+							? new(originalStream, message.BodyPartName)
 							: new MultipartFormDataContentStream(originalStream)
-						: new MultipartFormDataContentStream(originalStream, ContentName);
+						: new(originalStream, ContentName);
 					message.BodyPart.ContentType = multipartFormDataContentStream.ContentType;
 					return multipartFormDataContentStream;
 				},

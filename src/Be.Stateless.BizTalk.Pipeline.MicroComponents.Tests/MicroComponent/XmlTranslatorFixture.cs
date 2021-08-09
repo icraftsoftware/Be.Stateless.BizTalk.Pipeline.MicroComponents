@@ -41,7 +41,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		public void BuildXmlTranslationSetWithNoTranslationInContext()
 		{
 			var sut = new XmlTranslator {
-				Translations = new XmlTranslationSet {
+				Translations = new() {
 					Override = false,
 					Items = new[] {
 						new XmlNamespaceTranslation("sourceUrn1", "urn:test1"),
@@ -66,7 +66,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			MessageMock.Setup(c => c.GetProperty(BizTalkFactoryProperties.XmlTranslations))
 				.Returns(
 					XmlTranslationSetConverter.Serialize(
-						new XmlTranslationSet {
+						new() {
 							Override = true,
 							Items = new[] {
 								new XmlNamespaceTranslation("sourceUrn5", "urn05")
@@ -74,7 +74,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 						}));
 
 			var sut = new XmlTranslator {
-				Translations = new XmlTranslationSet {
+				Translations = new() {
 					Override = false,
 					Items = new[] {
 						new XmlNamespaceTranslation("sourceUrn1", "urn:test1"),
@@ -102,7 +102,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			using (var dataStream = new MemoryStream(Encoding.UTF8.GetBytes("<root xmlns='urn:ns'></root>")))
 			{
 				var sut = new XmlTranslator {
-					Translations = new XmlTranslationSet {
+					Translations = new() {
 						Items = new[] {
 							new XmlNamespaceTranslation("urn:ns", "urn:ns:translated")
 						}
@@ -122,7 +122,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			using (var dataStream = new MemoryStream(Encoding.UTF8.GetBytes("<root xmlns='urn:ns'></root>")))
 			{
 				var sut = new XmlTranslator {
-					Translations = new XmlTranslationSet {
+					Translations = new() {
 						Items = new[] {
 							new XmlNamespaceTranslation("urn:ns", "urn:ns:translated")
 						}
@@ -141,7 +141,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		public void RoundTripXmlSerialization()
 		{
 			var builder = new StringBuilder();
-			using (var writer = XmlWriter.Create(builder, new XmlWriterSettings { OmitXmlDeclaration = true }))
+			using (var writer = XmlWriter.Create(builder, new() { OmitXmlDeclaration = true }))
 			{
 				new XmlTranslator().Serialize(writer);
 			}

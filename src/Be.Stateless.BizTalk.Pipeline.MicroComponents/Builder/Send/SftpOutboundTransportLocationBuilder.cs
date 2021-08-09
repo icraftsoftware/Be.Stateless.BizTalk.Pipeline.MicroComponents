@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 using System;
 using System.IO;
 using Be.Stateless.BizTalk.ContextProperties;
+using Be.Stateless.BizTalk.ContextProperties.Extensions;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.BizTalk.MicroComponent;
 using Be.Stateless.Extensions;
@@ -34,9 +35,6 @@ namespace Be.Stateless.BizTalk.Builder.Send
 		{
 			context.EnsureSftpOutboundTransport();
 
-			// enabling IsDynamicSend is required
-			context.SetProperty(BtsProperties.IsDynamicSend, true);
-
 			var folder = context.GetProperty(SftpProperties.FolderPath);
 			var subFolderAndFile = context.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation);
 			if (subFolderAndFile.IsNullOrEmpty())
@@ -44,6 +42,7 @@ namespace Be.Stateless.BizTalk.Builder.Send
 					"Target sub folder and file name were expected to be found in BizTalkFactoryProperties.OutboundTransportLocation context property.");
 			var subFolder = Path.GetDirectoryName(subFolderAndFile);
 			var file = Path.GetFileName(subFolderAndFile);
+			context.EnableDynamicSend(); // required
 			context.SetProperty(SftpProperties.FolderPath, Path.Combine(folder, subFolder!).Replace('\\', '/'));
 			context.SetProperty(SftpProperties.TargetFileName, file);
 		}

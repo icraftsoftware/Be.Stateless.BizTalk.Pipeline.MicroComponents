@@ -32,7 +32,7 @@ namespace Be.Stateless.BizTalk.Builder.Send
 
 		public SftpOutboundTransportLocationBuilderFixture()
 		{
-			MessageContextMock = new MessageContextMock();
+			MessageContextMock = new();
 			MessageContextMock
 				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportCLSID))
 				.Returns("{C166A7E5-4F4C-4B02-A6F2-8BE07E1FA786}");

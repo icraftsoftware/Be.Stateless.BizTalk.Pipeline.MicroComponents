@@ -55,7 +55,6 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Public API.")]
 		public bool ImpersonationEnabled { get; set; }
 
-		[SuppressMessage("Performance", "CA1822:Mark members as static")]
 		private void CreateDirectory(string location)
 		{
 			if (Directory.Exists(location))

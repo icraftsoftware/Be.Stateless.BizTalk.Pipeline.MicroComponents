@@ -32,7 +32,7 @@ namespace Be.Stateless.BizTalk.Builder.Send
 
 		public FileOutboundTransportLocationBuilderFixture()
 		{
-			MessageContextMock = new MessageContextMock();
+			MessageContextMock = new();
 			MessageContextMock
 				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportCLSID))
 				.Returns("{9D0E4341-4CCE-4536-83FA-4A5040674AD6}");

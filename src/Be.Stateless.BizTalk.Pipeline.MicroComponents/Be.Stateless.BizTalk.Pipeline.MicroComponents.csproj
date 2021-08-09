@@ -35,12 +35,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.0.21171.29951" />
-    <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.21171.58430" />
-    <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.0.21215.39558" />
-    <PackageReference Include="Be.Stateless.Security" Version="2.0.21071.48839" />
-    <PackageReference Include="Be.Stateless.Stream" Version="2.0.21212.92" />
-    <PackageReference Include="Be.Stateless.Xml" Version="2.0.21104.42878" />
+    <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.0.21284.24948" />
+    <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.21284.27446" />
+    <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.0.21284.25652" />
+    <PackageReference Include="Be.Stateless.BizTalk.Xml" Version="2.0.21284.25331" />
+    <PackageReference Include="Be.Stateless.Extensions" Version="2.0.21281.26117" />
+    <PackageReference Include="Be.Stateless.Security" Version="2.0.21281.38867" />
+    <PackageReference Include="Be.Stateless.Stream" Version="2.0.21281.39270" />
+    <PackageReference Include="Be.Stateless.Xml" Version="2.0.21281.40683" />
     <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

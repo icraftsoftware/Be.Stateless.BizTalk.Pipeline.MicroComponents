@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,11 +44,10 @@ namespace Be.Stateless.BizTalk.Unit.MicroComponent
 		/// NUnit fixture's SetUp method.
 		/// </summary>
 		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
-		[SuppressMessage("Usage", "CA2201:Do not raise reserved exception types", Justification = "Emulate actual BizTalk runtime.")]
 		protected void Initialize()
 		{
-			MessageMock = new MessageMock { DefaultValue = DefaultValue.Mock };
-			PipelineContextMock = new Mock<IPipelineContext> { DefaultValue = DefaultValue.Mock };
+			MessageMock = new() { DefaultValue = DefaultValue.Mock };
+			PipelineContextMock = new() { DefaultValue = DefaultValue.Mock };
 			// default behavior analogous to actual IPipelineContext implementation
 			PipelineContextMock
 				.Setup(pc => pc.GetDocumentSpecByType(It.IsAny<string>()))

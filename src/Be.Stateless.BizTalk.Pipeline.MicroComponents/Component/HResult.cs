@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2021 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,13 +16,9 @@
 
 #endregion
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace Be.Stateless.BizTalk.Component
 {
-	[SuppressMessage("Design", "CA1028:Enum Storage should be Int32", Justification = "HResult are uint")]
-	[SuppressMessage("Design", "CA1008:Enums should have zero value")]
-	public enum HResult : uint
+	public enum HResult : uint // HResult values are uint
 	{
 		/// <summary>
 		/// Error Code = 'Finding the document specification by message type "..." failed. Verify the schema deployed properly.'
