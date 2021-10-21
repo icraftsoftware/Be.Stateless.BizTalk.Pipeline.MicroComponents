@@ -34,14 +34,14 @@ namespace Be.Stateless.BizTalk.Builder.Send
 		{
 			MessageContextMock = new();
 			MessageContextMock
+				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportLocation))
+				.Returns("sftp://sftp.world.com:22/files/drops/party/%MessageID%.xml");
+			MessageContextMock
 				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportCLSID))
 				.Returns("{C166A7E5-4F4C-4B02-A6F2-8BE07E1FA786}");
 			MessageContextMock
 				.Setup(c => c.GetProperty(SftpProperties.FolderPath))
-				.Returns("/Files/Drops/Party");
-			MessageContextMock
-				.Setup(c => c.GetProperty(SftpProperties.TargetFileName))
-				.Returns(@"%MessageID%.xml");
+				.Returns("/files/drops/party");
 		}
 
 		#endregion
@@ -51,13 +51,14 @@ namespace Be.Stateless.BizTalk.Builder.Send
 		{
 			MessageContextMock
 				.Setup(c => c.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation))
-				.Returns(@"File.txt");
+				.Returns(@"file.txt");
 
 			new SftpOutboundTransportLocationBuilder().Execute(MessageContextMock.Object);
 
-			MessageContextMock.Verify(c => c.SetProperty(BtsProperties.IsDynamicSend, true));
-			MessageContextMock.Verify(c => c.SetProperty(SftpProperties.FolderPath, "/Files/Drops/Party"));
-			MessageContextMock.Verify(c => c.SetProperty(SftpProperties.TargetFileName, @"File.txt"));
+			MessageContextMock.Verify(
+				c => c.SetProperty(
+					BtsProperties.OutboundTransportLocation,
+					"sftp://sftp.world.com:22/files/drops/party/file.txt"));
 		}
 
 		[Fact]
@@ -65,13 +66,14 @@ namespace Be.Stateless.BizTalk.Builder.Send
 		{
 			MessageContextMock
 				.Setup(c => c.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation))
-				.Returns(@"Folder\File.txt");
+				.Returns(@"folder\file.txt");
 
 			new SftpOutboundTransportLocationBuilder().Execute(MessageContextMock.Object);
 
-			MessageContextMock.Verify(c => c.SetProperty(BtsProperties.IsDynamicSend, true));
-			MessageContextMock.Verify(c => c.SetProperty(SftpProperties.FolderPath, "/Files/Drops/Party/Folder"));
-			MessageContextMock.Verify(c => c.SetProperty(SftpProperties.TargetFileName, @"File.txt"));
+			MessageContextMock.Verify(
+				c => c.SetProperty(
+					BtsProperties.OutboundTransportLocation,
+					"sftp://sftp.world.com:22/files/drops/party/folder/file.txt"));
 		}
 
 		[Fact]
@@ -79,13 +81,14 @@ namespace Be.Stateless.BizTalk.Builder.Send
 		{
 			MessageContextMock
 				.Setup(c => c.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation))
-				.Returns(@"\Folder\File.txt");
+				.Returns(@"\folder\file.txt");
 
 			new SftpOutboundTransportLocationBuilder().Execute(MessageContextMock.Object);
 
-			MessageContextMock.Verify(c => c.SetProperty(BtsProperties.IsDynamicSend, true));
-			MessageContextMock.Verify(c => c.SetProperty(SftpProperties.FolderPath, "/Folder"));
-			MessageContextMock.Verify(c => c.SetProperty(SftpProperties.TargetFileName, @"File.txt"));
+			MessageContextMock.Verify(
+				c => c.SetProperty(
+					BtsProperties.OutboundTransportLocation,
+					"sftp://sftp.world.com:22/folder/file.txt"));
 		}
 
 		[Fact]

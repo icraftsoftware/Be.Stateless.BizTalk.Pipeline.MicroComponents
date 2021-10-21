@@ -19,7 +19,6 @@
 using System;
 using System.IO;
 using Be.Stateless.BizTalk.ContextProperties;
-using Be.Stateless.BizTalk.ContextProperties.Extensions;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.BizTalk.MicroComponent;
 using Be.Stateless.Extensions;
@@ -35,16 +34,14 @@ namespace Be.Stateless.BizTalk.Builder.Send
 		{
 			context.EnsureSftpOutboundTransport();
 
+			var builder = new UriBuilder(context.GetProperty(BtsProperties.OutboundTransportLocation));
 			var folder = context.GetProperty(SftpProperties.FolderPath);
 			var subFolderAndFile = context.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation);
 			if (subFolderAndFile.IsNullOrEmpty())
 				throw new InvalidOperationException(
 					"Target sub folder and file name were expected to be found in BizTalkFactoryProperties.OutboundTransportLocation context property.");
-			var subFolder = Path.GetDirectoryName(subFolderAndFile);
-			var file = Path.GetFileName(subFolderAndFile);
-			context.EnableDynamicSend(); // required
-			context.SetProperty(SftpProperties.FolderPath, Path.Combine(folder, subFolder!).Replace('\\', '/'));
-			context.SetProperty(SftpProperties.TargetFileName, file);
+			builder.Path = Path.Combine(folder, subFolderAndFile);
+			context.SetProperty(BtsProperties.OutboundTransportLocation, builder.ToString());
 		}
 
 		#endregion
