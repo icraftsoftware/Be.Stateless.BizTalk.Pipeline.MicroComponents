@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2021 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,15 @@ namespace Be.Stateless.BizTalk.MicroComponent
 	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class SBMessagingContextPropagatorFixture : MicroComponentFixture<SBMessagingContextPropagator>
 	{
+		#region Setup/Teardown
+
+		public SBMessagingContextPropagatorFixture()
+		{
+			MessageMock.Setup(m => m.GetProperty(SBMessagingProperties.CustomBrokeredMessagePropertyNamespace)).Returns(CUSTOM_BROKERED_MESSAGE_NAMESPACE);
+		}
+
+		#endregion
+
 		[Fact]
 		public void BizTalkPropertiesAreOnlyPropagatedOutward()
 		{
@@ -63,6 +72,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			const string messageType = "urn:ns#root";
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.InboundTransportLocation)).Returns("inbound-transport-location");
+			MessageMock.Setup(m => m.Context.Read(nameof(BtsProperties.MessageType), CUSTOM_BROKERED_MESSAGE_NAMESPACE)).Returns(messageType);
 			MessageMock.Setup(m => m.GetProperty(BizTalkFactoryProperties.MessageType)).Returns(messageType);
 
 			var sut = new SBMessagingContextPropagator();
@@ -188,7 +198,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			var sut = new SBMessagingContextPropagator();
 			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
-			MessageMock.Verify(m => m.SetProperty(BizTalkFactoryProperties.MessageType, messageType), Times.Once);
+			MessageMock.Verify(m => m.Context.Write(nameof(BtsProperties.MessageType), CUSTOM_BROKERED_MESSAGE_NAMESPACE, messageType), Times.Once);
 		}
 
 		[Fact]
@@ -212,5 +222,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 				MessageMock.Verify(m => m.Promote(BtsProperties.MessageType, It.IsAny<string>()), Times.Never);
 			}
 		}
+
+		private const string CUSTOM_BROKERED_MESSAGE_NAMESPACE = "urn:custom-brokered-message-namespace";
 	}
 }
