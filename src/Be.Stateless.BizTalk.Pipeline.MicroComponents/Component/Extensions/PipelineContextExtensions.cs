@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 		public static ISchemaMetadata GetSchemaMetadataByType(this IPipelineContext pipelineContext, string docType, bool throwOnError)
 		{
 			if (throwOnError) return pipelineContext.GetSchemaMetadataByType(docType);
-			var schemaType = !docType.IsNullOrEmpty() && pipelineContext.TryGetDocumentSpecByType(docType, out var documentSpec)
+			var schemaType = pipelineContext.TryGetDocumentSpecByType(docType, out var documentSpec)
 				? Type.GetType(documentSpec.DocSpecStrongName, false)
 				: null;
 			return SchemaMetadata.For(schemaType);
@@ -82,14 +82,16 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 			if (pipelineContext == null) throw new ArgumentNullException(nameof(pipelineContext));
 			try
 			{
-				documentSpec = pipelineContext.GetDocumentSpecByType(docType);
-				return true;
+				documentSpec = docType.IsNullOrEmpty()
+					? null
+					: pipelineContext.GetDocumentSpecByType(docType);
+				return documentSpec != null;
 			}
 			catch (COMException exception)
 			{
 				documentSpec = null;
 				if ((uint) exception.ErrorCode == (uint) HResult.ErrorSchemaNotFound) return false;
-				if (_logger.IsWarnEnabled) _logger.Warn($"SafeGetDocumentSpecByType({docType}) has failed.", exception);
+				if (_logger.IsWarnEnabled) _logger.Warn($"{nameof(TryGetDocumentSpecByType)}({docType}) has failed.", exception);
 				throw;
 			}
 		}

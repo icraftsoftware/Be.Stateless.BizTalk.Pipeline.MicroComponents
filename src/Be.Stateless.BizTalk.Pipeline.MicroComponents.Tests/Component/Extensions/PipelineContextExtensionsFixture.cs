@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 				.Setup(m => m.DocSpecStrongName)
 				.Returns(schemaMetadata.DocumentSpec.DocSpecStrongName);
 
-			var pipelineContextMock = new Mock<IPipelineContext> { DefaultValue = DefaultValue.Mock };
+			var pipelineContextMock = new Mock<IPipelineContext>();
 			pipelineContextMock
 				.Setup(pc => pc.GetDocumentSpecByType(schemaMetadata.MessageType))
 				.Returns(documentSpecMock.Object);
@@ -58,7 +58,7 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 				.Setup(m => m.DocSpecStrongName)
 				.Returns(typeof(string).AssemblyQualifiedName);
 
-			var pipelineContextMock = new Mock<IPipelineContext> { DefaultValue = DefaultValue.Mock };
+			var pipelineContextMock = new Mock<IPipelineContext>();
 			pipelineContextMock
 				.Setup(pc => pc.GetDocumentSpecByType("string"))
 				.Returns(documentSpecMock.Object);
@@ -78,7 +78,7 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 				.Setup(m => m.DocSpecStrongName)
 				.Returns("Unknown.Type, UnknownAssembly");
 
-			var pipelineContextMock = new Mock<IPipelineContext> { DefaultValue = DefaultValue.Mock };
+			var pipelineContextMock = new Mock<IPipelineContext>();
 			pipelineContextMock
 				.Setup(pc => pc.GetDocumentSpecByType(schemaMetadata.MessageType))
 				.Returns(documentSpecMock.Object);
@@ -91,7 +91,7 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 		[Fact]
 		public void GetSchemaMetadataByTypeForUnknownSchema()
 		{
-			var pipelineContextMock = new Mock<IPipelineContext> { DefaultValue = DefaultValue.Mock };
+			var pipelineContextMock = new Mock<IPipelineContext>();
 			pipelineContextMock
 				.Setup(pc => pc.GetDocumentSpecByType(It.IsAny<string>()))
 				.Throws(new COMException("Finding the document specification by message type failed.", unchecked((int) HResult.ErrorSchemaNotFound)));
@@ -99,6 +99,42 @@ namespace Be.Stateless.BizTalk.Component.Extensions
 			var metadata = pipelineContextMock.Object.GetSchemaMetadataByType("urn:ns#root", false);
 
 			metadata.Should().BeSameAs(SchemaMetadata.Unknown);
+		}
+
+		[Theory]
+		[InlineData(null)]
+		[InlineData("")]
+		public void TryGetDocumentSpecByTypeForNullOrEmptyDocType(string docType)
+		{
+			var pipelineContextMock = new Mock<IPipelineContext>();
+			pipelineContextMock.Object.TryGetDocumentSpecByType(docType, out var documentSpec).Should().BeFalse();
+			documentSpec.Should().BeNull();
+		}
+
+		[Fact]
+		public void TryGetDocumentSpecByTypForKnownSchema()
+		{
+			var schemaMetadata = SchemaMetadata.For<Any>();
+
+			var pipelineContextMock = new Mock<IPipelineContext>();
+			pipelineContextMock
+				.Setup(pc => pc.GetDocumentSpecByType(schemaMetadata.MessageType))
+				.Returns(schemaMetadata.DocumentSpec);
+
+			pipelineContextMock.Object.TryGetDocumentSpecByType("http://schemas.microsoft.com/BizTalk/2003/Any#Root", out var documentSpec).Should().BeTrue();
+			documentSpec.Should().BeEquivalentTo(schemaMetadata.DocumentSpec);
+		}
+
+		[Fact]
+		public void TryGetDocumentSpecByTypForUnknownSchema()
+		{
+			var pipelineContextMock = new Mock<IPipelineContext>();
+			pipelineContextMock
+				.Setup(pc => pc.GetDocumentSpecByType(It.IsAny<string>()))
+				.Throws(new COMException("Finding the document specification by message type failed.", unchecked((int) HResult.ErrorSchemaNotFound)));
+
+			pipelineContextMock.Object.TryGetDocumentSpecByType("urn:ns#root", out var documentSpec).Should().BeFalse();
+			documentSpec.Should().BeNull();
 		}
 	}
 }
