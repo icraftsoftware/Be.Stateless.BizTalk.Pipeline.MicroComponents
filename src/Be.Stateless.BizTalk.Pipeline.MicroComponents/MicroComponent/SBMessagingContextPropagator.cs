@@ -16,12 +16,11 @@
 
 #endregion
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
-using Be.Stateless.BizTalk.Namespaces;
 using Be.Stateless.Extensions;
+using BTS;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;
 using SBMessaging;
@@ -29,22 +28,19 @@ using SBMessaging;
 namespace Be.Stateless.BizTalk.MicroComponent
 {
 	/// <summary>
-	/// Propagates message type and correlation id over Azure ServiceBus queues inwards and outwards.
+	/// Propagates message type and correlation id over inbound and outbound Azure ServiceBus queues.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// For inbound messages, <see cref="SBMessagingProperties.CorrelationId">SBMessagingProperties.CorrelationId</see> and
-	/// <c>MessageType</c> &#8212;in namespace declared by <c>SB-Messaging</c> adapter's <see
-	/// cref="SBMessagingProperties.CustomBrokeredMessagePropertyNamespace"/>&#8212; if any, are respectively promoted into
-	/// BizTalk message context as <c>BizTalkFactoryProperties.CorrelationId</c> and <see
-	/// cref="BtsProperties.MessageType">BtsProperties.MessageType</see>.
+	/// For inbound messages, <see cref="SBMessagingProperties.CorrelationId">SBMessagingProperties.CorrelationId</see>, if any,
+	/// is promoted into BizTalk Server message context as <c>BizTalkFactoryProperties.CorrelationId</c> property.
 	/// </para>
 	/// <para>
 	/// For outbound messages, <c>BizTalkFactoryProperties.CorrelationId</c> and <see
 	/// cref="BtsProperties.MessageType">BtsProperties.MessageType</see>, if any, are respectively propagated as
 	/// <see cref="SBMessagingProperties.CorrelationId">SBMessagingProperties.CorrelationId</see>
 	/// and <c>MessageType</c> in namespace declared by <c>SB-Messaging</c> adapter's <see
-	/// cref="SBMessagingProperties.CustomBrokeredMessagePropertyNamespace"/>.
+	/// cref="CustomBrokeredMessagePropertyNamespace"/> configuration property.
 	/// </para>
 	/// </remarks>
 	[SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -54,27 +50,18 @@ namespace Be.Stateless.BizTalk.MicroComponent
 
 		public IBaseMessage Execute(IPipelineContext pipelineContext, IBaseMessage message)
 		{
-			var customBrokeredMessagePropertyNamespace = message.GetProperty(SBMessagingProperties.CustomBrokeredMessagePropertyNamespace)
-				?? throw new InvalidOperationException($"{nameof(CustomBrokeredMessagePropertyNamespace)} has no value defined in SB-Messaging adapter configuration.");
 			if (message.Direction().IsInbound())
 			{
-				var correlationId = message.GetProperty(SBMessagingProperties.CorrelationId);
-				// use the native BTS API instead of the message.PromoteCorrelationId(correlationId) to have no dependency on
-				// BizTalk.Schemas which would reversed the desired dependency order, i.e. from an artifact component
-				// (BizTalk.Schemas) to a runtime one (BizTalk.Pipeline.MicroComponents itself)
-				if (!correlationId.IsNullOrEmpty()) message.Context.Promote(nameof(SBMessagingProperties.CorrelationId), PropertySchemaNamespaces.BizTalkFactory, correlationId);
-				var messageType = (string) message.Context.Read(nameof(BizTalkFactoryProperties.MessageType), customBrokeredMessagePropertyNamespace);
-				if (!messageType.IsNullOrEmpty()) message.Promote(BtsProperties.MessageType, messageType);
+				message.GetProperty(SBMessagingProperties.CorrelationId)
+					.IfNotNullOrEmpty(message.PromoteBizTalkFactoryCorrelationId);
+				// do not propagate BtsProperties.MessageType but assumes that an XmlDisassembler will determine and promote the actual message type
 			}
 			else
 			{
-				// use the native BTS API instead of the message.GetProperty(BizTalkFactoryProperties.CorrelationId) to have no
-				// dependency on BizTalk.Schemas which would reversed the desired dependency order, i.e. from an artifact component
-				// (BizTalk.Schemas) to a runtime one (BizTalk.Pipeline.MicroComponents itself)
-				var correlationId = (string) message.Context.Read(nameof(SBMessagingProperties.CorrelationId), BizTalkFactoryProperties.MessageType.Namespace);
-				if (!correlationId.IsNullOrEmpty()) message.SetProperty(SBMessagingProperties.CorrelationId, correlationId);
-				var messageType = message.GetOrProbeMessageType(pipelineContext);
-				if (!messageType.IsNullOrEmpty()) message.Context.Write(nameof(BizTalkFactoryProperties.MessageType), customBrokeredMessagePropertyNamespace, messageType);
+				message.GetBizTalkFactoryCorrelationId()
+					.IfNotNullOrEmpty(id => message.SetProperty(SBMessagingProperties.CorrelationId, id));
+				message.GetOrProbeMessageType(pipelineContext)
+					.IfNotNullOrEmpty(type => message.Context.Write(nameof(MessageType), message.GetWcfCustomBrokeredPropertyNamespace(), type));
 			}
 			return message;
 		}
