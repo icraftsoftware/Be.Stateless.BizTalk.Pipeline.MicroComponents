@@ -24,32 +24,32 @@ using Xunit;
 
 namespace Be.Stateless.BizTalk.Message.Extensions
 {
-	public class BaseMessageContextMicroComponentExtensionsFixture
+	public class BaseMessageMicroComponentExtensionsFixture
 	{
 		[Fact]
 		public void OutboundTransportForInboundTraffic()
 		{
-			var messageContextMock = new MessageContextMock();
+			var messageMock = new MessageMock();
 
-			messageContextMock.Setup(m => m.GetProperty(BtsProperties.InboundTransportLocation))
+			messageMock.Setup(m => m.GetProperty(BtsProperties.InboundTransportLocation))
 				.Returns("inbound-direction");
 
-			messageContextMock.Object.OutboundTransport().Should().BeSameAs(OutboundTransport.None);
+			messageMock.Object.OutboundTransport().Should().BeSameAs(OutboundTransport.None);
 		}
 
 		[Fact]
 		public void OutboundTransportForOutboundTraffic()
 		{
-			var messageContextMock = new MessageContextMock();
+			var messageMock = new MessageMock();
 
-			messageContextMock
+			messageMock
 				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation))
 				.Returns("outbound-direction");
-			messageContextMock
+			messageMock
 				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID))
 				.Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
 
-			messageContextMock.Object.OutboundTransport()
+			messageMock.Object.OutboundTransport()
 				.Should().NotBeNull()
 				.And.Subject.As<OutboundTransport>().IsSBMessagingTransmitter().Should().BeTrue();
 		}

@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2021 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.BizTalk.Unit;
 using FluentAssertions;
+using Moq;
 using Xunit;
 using static FluentAssertions.FluentActions;
 
@@ -35,10 +36,27 @@ namespace Be.Stateless.BizTalk.Builder.Send
 			MessageContextMock = new();
 			MessageContextMock
 				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportCLSID))
-				.Returns("{9D0E4341-4CCE-4536-83FA-4A5040674AD6}");
+				.Returns(Adapter.Transport.OutboundTransport.FileTransmitterClassId.ToString("D"));
 		}
 
 		#endregion
+
+		[Fact]
+		public void DoesNothingWhenNotFileTransmitter()
+		{
+			MessageContextMock
+				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportLocation))
+				.Returns("outbound-transport");
+			MessageContextMock
+				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportCLSID))
+				.Returns(Adapter.Transport.OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
+
+			Invoking(() => new FileOutboundTransportLocationBuilder().Execute(MessageContextMock.Object))
+				.Should().NotThrow();
+
+			MessageContextMock.Verify(c => c.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation), Times.Never);
+			MessageContextMock.Verify(c => c.SetProperty(BtsProperties.OutboundTransportLocation, It.IsAny<string>()), Times.Never);
+		}
 
 		[Fact]
 		public void OutboundTransportLocationHasFile()
@@ -46,7 +64,6 @@ namespace Be.Stateless.BizTalk.Builder.Send
 			MessageContextMock
 				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportLocation))
 				.Returns(@"C:\Files\Drops\Party\%MessageID%.xml");
-
 			MessageContextMock
 				.Setup(c => c.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation))
 				.Returns(@"File.txt");
@@ -62,7 +79,6 @@ namespace Be.Stateless.BizTalk.Builder.Send
 			MessageContextMock
 				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportLocation))
 				.Returns(@"C:\Files\Drops\Party\%MessageID%.xml");
-
 			MessageContextMock
 				.Setup(c => c.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation))
 				.Returns(@"Folder\File.txt");
@@ -78,7 +94,6 @@ namespace Be.Stateless.BizTalk.Builder.Send
 			MessageContextMock
 				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportLocation))
 				.Returns(@"C:\Files\Drops\Party\%MessageID%.xml");
-
 			MessageContextMock
 				.Setup(c => c.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation))
 				.Returns(@"\Folder\File.txt");
@@ -109,7 +124,6 @@ namespace Be.Stateless.BizTalk.Builder.Send
 			MessageContextMock
 				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportLocation))
 				.Returns(@"\\server\SubDirectory\%MessageID%.xml");
-
 			MessageContextMock
 				.Setup(c => c.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation))
 				.Returns(@"File.txt");
@@ -134,21 +148,13 @@ namespace Be.Stateless.BizTalk.Builder.Send
 		[Fact]
 		public void ThrowsWhenNoRootOutboundTransportLocation()
 		{
+			MessageContextMock
+				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportLocation))
+				.Returns("file.txt");
+
 			Invoking(() => new FileOutboundTransportLocationBuilder().Execute(MessageContextMock.Object))
 				.Should().Throw<InvalidOperationException>()
 				.WithMessage("Root path was expected to be found in BtsProperties.OutboundTransportLocation context property.");
-		}
-
-		[Fact]
-		public void ThrowsWhenNotUsedWithFileAdapter()
-		{
-			MessageContextMock
-				.Setup(c => c.GetProperty(BtsProperties.OutboundTransportCLSID))
-				.Returns("{C166A7E5-4F4C-4B02-A6F2-8BE07E1FA786}");
-
-			Invoking(() => new FileOutboundTransportLocationBuilder().Execute(MessageContextMock.Object))
-				.Should().Throw<InvalidOperationException>()
-				.WithMessage("Outbound file transport is required on this leg of the message exchange pattern.");
 		}
 
 		private MessageContextMock MessageContextMock { get; }

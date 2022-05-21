@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Be.Stateless.BizTalk.Adapter.Transport;
 using Be.Stateless.BizTalk.Component.Extensions;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Namespaces;
@@ -31,25 +32,18 @@ namespace Be.Stateless.BizTalk.Message.Extensions
 {
 	public static class BaseMessageMicroComponentExtensions
 	{
-		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
-		public static void EnsureFileOutboundTransport(this IBaseMessage message)
-		{
-			if (message == null) throw new ArgumentNullException(nameof(message));
-			message.Context.EnsureFileOutboundTransport();
-		}
-
-		[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
-		public static void EnsureSftpOutboundTransport(this IBaseMessage message)
-		{
-			if (message == null) throw new ArgumentNullException(nameof(message));
-			message.Context.EnsureSftpOutboundTransport();
-		}
-
 		public static string GetOrProbeMessageType(this IBaseMessage message, IPipelineContext pipelineContext)
 		{
 			if (message == null) throw new ArgumentNullException(nameof(message));
 			if (pipelineContext == null) throw new ArgumentNullException(nameof(pipelineContext));
 			return message.GetOrProbeMessageType(pipelineContext.ResourceTracker);
+		}
+
+		public static OutboundTransport OutboundTransport(this IBaseMessage message)
+		{
+			return message.Direction().IsOutbound()
+				? new(new Guid(message.GetProperty(BtsProperties.OutboundTransportCLSID)))
+				: Adapter.Transport.OutboundTransport.None;
 		}
 
 		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API.")]

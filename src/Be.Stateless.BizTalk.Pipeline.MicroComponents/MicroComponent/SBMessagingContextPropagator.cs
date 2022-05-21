@@ -16,7 +16,6 @@
 
 #endregion
 
-using System.Diagnostics.CodeAnalysis;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.Extensions;
@@ -43,7 +42,6 @@ namespace Be.Stateless.BizTalk.MicroComponent
 	/// cref="CustomBrokeredMessagePropertyNamespace"/> configuration property.
 	/// </para>
 	/// </remarks>
-	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class SBMessagingContextPropagator : IMicroComponent
 	{
 		#region IMicroComponent Members
@@ -52,11 +50,13 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		{
 			if (message.Direction().IsInbound())
 			{
+				// As no InboundTransportCLSID is written in context, there is no easy way to determine if InboundTransport is
+				// SBMessagingReceiver; assumes thus that only it could write SBMessagingProperties.CorrelationId in context.
 				message.GetProperty(SBMessagingProperties.CorrelationId)
 					.IfNotNullOrEmpty(message.PromoteBizTalkFactoryCorrelationId);
-				// do not propagate BtsProperties.MessageType but assumes that an XmlDisassembler will determine and promote the actual message type
+				// don't propagate BtsProperties.MessageType; assumes XmlDisassembler will determine and promote the actual message type
 			}
-			else
+			else if (message.OutboundTransport().IsSBMessagingTransmitter())
 			{
 				message.GetBizTalkFactoryCorrelationId()
 					.IfNotNullOrEmpty(id => message.SetProperty(SBMessagingProperties.CorrelationId, id));

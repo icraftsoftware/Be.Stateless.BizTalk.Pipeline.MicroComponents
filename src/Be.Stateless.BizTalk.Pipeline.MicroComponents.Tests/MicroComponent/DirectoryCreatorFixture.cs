@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2021 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,12 @@
 #endregion
 
 using System;
+using Be.Stateless.BizTalk.Adapter.Transport;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.BizTalk.Unit.MicroComponent;
 using FluentAssertions;
+using Moq;
 using Xunit;
 using static FluentAssertions.FluentActions;
 
@@ -29,32 +31,66 @@ namespace Be.Stateless.BizTalk.MicroComponent
 	public class DirectoryCreatorFixture : MicroComponentFixture<DirectoryCreator>
 	{
 		[Fact]
-		public void NoDirectoryToCreate()
+		public void CreateDirectory()
 		{
 			MessageMock
-				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID))
-				.Returns(BaseMessageContextMicroComponentExtensions.FileAdapterOutboundTransportClassId.ToString("D"));
+				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation))
+				.Returns(@"c:\file\message.xml");
 			MessageMock
-				.Setup(m => m.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation))
-				.Returns("file.txt");
+				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID))
+				.Returns(OutboundTransport.FileTransmitterClassId.ToString("D"));
 
-			var sut = new DirectoryCreator();
-			Invoking(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
-				.Should().Throw<ArgumentNullException>()
-				.WithMessage("Value cannot be null.\r\nParameter name: path");
+			var sut = new Mock<DirectoryCreator> { CallBase = true };
+			sut.Object.Execute(PipelineContextMock.Object, MessageMock.Object);
+
+			sut.Verify(m => m.CreateDirectory(@"c:\file"));
 		}
 
 		[Fact]
-		public void UnsupportedOutboundTransportType()
+		public void CreateDirectoryIsNotCalledForInboundTraffic()
 		{
 			MessageMock
+				.Setup(m => m.GetProperty(BtsProperties.InboundTransportLocation))
+				.Returns("inbound-direction");
+
+			var sut = new Mock<DirectoryCreator> { CallBase = true };
+
+			Invoking(() => sut.Object.Execute(PipelineContextMock.Object, MessageMock.Object)).Should().NotThrow();
+
+			sut.Verify(m => m.CreateDirectory(It.IsAny<string>()), Times.Never);
+		}
+
+		[Fact]
+		public void CreateDirectoryIsNotCalledForOtherTransmitterThanFile()
+		{
+			MessageMock
+				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation))
+				.Returns("outbound-direction");
+			MessageMock
 				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID))
-				.Returns("ee0e71a6-8945-4dd3-8770-f9e5495ddc7b");
+				.Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
+
+			var sut = new Mock<DirectoryCreator> { CallBase = true };
+
+			Invoking(() => sut.Object.Execute(PipelineContextMock.Object, MessageMock.Object)).Should().NotThrow();
+
+			sut.Verify(m => m.CreateDirectory(It.IsAny<string>()), Times.Never);
+		}
+
+		[Fact]
+		public void CreateDirectoryThrows()
+		{
+			MessageMock
+				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation))
+				.Returns("file.txt");
+			MessageMock
+				.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID))
+				.Returns(OutboundTransport.FileTransmitterClassId.ToString("D"));
 
 			var sut = new DirectoryCreator();
 			Invoking(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
-				.Should().Throw<InvalidOperationException>()
-				.WithMessage("Outbound file transport is required on this leg of the message exchange pattern.");
+				.Should().Throw<ArgumentException>()
+				.WithMessage("Path cannot be the empty string or all whitespace.");
 		}
 	}
 }

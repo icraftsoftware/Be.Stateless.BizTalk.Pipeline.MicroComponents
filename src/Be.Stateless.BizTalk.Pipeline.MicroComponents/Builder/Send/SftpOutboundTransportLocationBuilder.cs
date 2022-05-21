@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2021 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,14 +32,13 @@ namespace Be.Stateless.BizTalk.Builder.Send
 
 		public void Execute(IBaseMessageContext context)
 		{
-			context.EnsureSftpOutboundTransport();
+			if (!context.OutboundTransport().IsSftpTransmitter()) return;
 
 			var builder = new UriBuilder(context.GetProperty(BtsProperties.OutboundTransportLocation));
 			var folder = context.GetProperty(SftpProperties.FolderPath);
 			var subFolderAndFile = context.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation);
 			if (subFolderAndFile.IsNullOrEmpty())
-				throw new InvalidOperationException(
-					"Target sub folder and file name were expected to be found in BizTalkFactoryProperties.OutboundTransportLocation context property.");
+				throw new InvalidOperationException("Target sub folder and file name were expected to be found in BizTalkFactoryProperties.OutboundTransportLocation context property.");
 			builder.Path = Path.Combine(folder, subFolderAndFile);
 			context.SetProperty(BtsProperties.OutboundTransportLocation, builder.ToString());
 		}

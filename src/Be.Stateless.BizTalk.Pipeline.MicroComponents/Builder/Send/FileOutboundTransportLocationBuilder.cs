@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2020 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ namespace Be.Stateless.BizTalk.Builder.Send
 
 		public void Execute(IBaseMessageContext context)
 		{
-			context.EnsureFileOutboundTransport();
+			if (!context.OutboundTransport().IsFileTransmitter()) return;
 
 			var outboundTransportLocation = context.GetProperty(BtsProperties.OutboundTransportLocation);
 			var rootPath = Path.GetDirectoryName(outboundTransportLocation);
@@ -45,8 +45,7 @@ namespace Be.Stateless.BizTalk.Builder.Send
 
 			var subPathAndFile = context.GetProperty(BizTalkFactoryProperties.OutboundTransportLocation);
 			if (subPathAndFile.IsNullOrEmpty())
-				throw new InvalidOperationException(
-					"Target sub path and file name were expected to be found in BizTalkFactoryProperties.OutboundTransportLocation context property.");
+				throw new InvalidOperationException("Target sub path and file name were expected to be found in BizTalkFactoryProperties.OutboundTransportLocation context property.");
 			context.SetProperty(BtsProperties.OutboundTransportLocation, Path.Combine(rootPath!, subPathAndFile));
 		}
 

@@ -20,15 +20,18 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
+using Be.Stateless.BizTalk.Adapter.Transport;
 using Be.Stateless.BizTalk.ContextProperties;
 using Be.Stateless.BizTalk.Message.Extensions;
 using Be.Stateless.BizTalk.Namespaces;
 using Be.Stateless.BizTalk.Unit.MicroComponent;
 using Be.Stateless.BizTalk.Unit.Stream;
 using BTS;
+using FluentAssertions;
 using Moq;
 using SBMessaging;
 using Xunit;
+using static FluentAssertions.FluentActions;
 
 namespace Be.Stateless.BizTalk.MicroComponent
 {
@@ -38,6 +41,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[Fact]
 		public void BizTalkCorrelationIdIsPropagatedOutward()
 		{
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID)).Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.MessageType)).Returns("urn:ns#root");
 			MessageMock.Setup(m => m.GetProperty(WcfProperties.CustomBrokeredPropertyNamespace)).Returns(CUSTOM_BROKERED_MESSAGE_NAMESPACE);
@@ -54,6 +58,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[Fact]
 		public void BizTalkCorrelationIdIsPropagatedOutwardUnlessEmpty()
 		{
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID)).Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.MessageType)).Returns("urn:ns#root");
 			MessageMock.Setup(m => m.GetProperty(WcfProperties.CustomBrokeredPropertyNamespace)).Returns(CUSTOM_BROKERED_MESSAGE_NAMESPACE);
@@ -67,6 +72,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[Fact]
 		public void BizTalkMessageTypeForOutboundMessagesIsProbed()
 		{
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID)).Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
 			using (var probeStreamMockInjectionScope = new ProbeStreamMockInjectionScope())
 			using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes("payload")))
@@ -83,6 +89,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[Fact]
 		public void BizTalkMessageTypeForOutboundMessagesIsProbedUnlessAlreadyKnown()
 		{
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID)).Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.MessageType)).Returns("urn:ns#root");
 			MessageMock.Setup(m => m.GetProperty(WcfProperties.CustomBrokeredPropertyNamespace)).Returns(CUSTOM_BROKERED_MESSAGE_NAMESPACE);
@@ -99,6 +106,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		public void BizTalkMessageTypeIsPropagatedOutward()
 		{
 			const string messageType = "urn:ns#root";
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID)).Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.MessageType)).Returns(messageType);
 			MessageMock.Setup(m => m.GetProperty(WcfProperties.CustomBrokeredPropertyNamespace)).Returns(CUSTOM_BROKERED_MESSAGE_NAMESPACE);
@@ -112,6 +120,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[Fact]
 		public void BizTalkMessageTypeIsPropagatedOutwardUnlessUnknownAndNotXml()
 		{
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID)).Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
 			using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes("non xml payload")))
 			{
@@ -138,6 +147,20 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			MessageMock.Verify(m => m.SetProperty(SBMessagingProperties.CorrelationId, It.IsAny<string>()), Times.Never);
 			MessageMock.Verify(m => m.Context.Promote(nameof(MessageType), CUSTOM_BROKERED_MESSAGE_NAMESPACE, It.IsAny<string>()), Times.Never);
 			MessageMock.Verify(m => m.Context.Write(nameof(MessageType), CUSTOM_BROKERED_MESSAGE_NAMESPACE, It.IsAny<string>()), Times.Never);
+		}
+
+		[Fact]
+		public void BizTalkPropertiesArePropagatedOutwardUnlessNotSBMessagingTransmitter()
+		{
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID)).Returns(OutboundTransport.FileTransmitterClassId.ToString("D"));
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
+
+			var sut = new SBMessagingContextPropagator();
+			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
+
+			MessageMock.Verify(m => m.Context.Read(nameof(CorrelationId), PropertySchemaNamespaces.BizTalkFactory), Times.Never);
+			MessageMock.Verify(m => m.GetProperty(BtsProperties.MessageType), Times.Never);
+			MessageMock.Verify(m => m.GetProperty(WcfProperties.CustomBrokeredPropertyNamespace), Times.Never);
 		}
 
 		[Fact]
@@ -181,6 +204,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[Fact]
 		public void BrokeredPropertiesAreOnlyPropagatedInward()
 		{
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID)).Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
 			MessageMock.Setup(m => m.GetProperty(BtsProperties.MessageType)).Returns("ns#root");
 			MessageMock.Setup(m => m.GetProperty(WcfProperties.CustomBrokeredPropertyNamespace)).Returns(CUSTOM_BROKERED_MESSAGE_NAMESPACE);
@@ -192,6 +216,21 @@ namespace Be.Stateless.BizTalk.MicroComponent
 			sut.Execute(PipelineContextMock.Object, MessageMock.Object);
 
 			MessageMock.Verify(m => m.Context.Promote(nameof(CorrelationId), PropertySchemaNamespaces.BizTalkFactory, It.IsAny<string>()), Times.Never);
+		}
+
+		[Fact]
+		public void ThrowsIfSBMessagingTransmitterAndCustomBrokeredPropertyNamespaceIsMissing()
+		{
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportCLSID)).Returns(OutboundTransport.SBMessagingTransmitterClassId.ToString("D"));
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.OutboundTransportLocation)).Returns("outbound-transport-location");
+			MessageMock.Setup(m => m.GetProperty(BtsProperties.MessageType)).Returns("urn:ns#root");
+
+			var sut = new SBMessagingContextPropagator();
+
+			Invoking(() => sut.Execute(PipelineContextMock.Object, MessageMock.Object))
+				.Should().Throw<InvalidOperationException>()
+				.WithMessage(
+					"Cannot find CustomBrokeredPropertyNamespace property in message context. Verify that CustomBrokeredMessagePropertyNamespace has been configured for the outbound SB-Messaging adapter.");
 		}
 
 		private const string CUSTOM_BROKERED_MESSAGE_NAMESPACE = "urn:custom-brokered-message-namespace";

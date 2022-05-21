@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2021 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,25 +26,29 @@ using Microsoft.BizTalk.Message.Interop;
 
 namespace Be.Stateless.BizTalk.MicroComponent
 {
+	[SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global", Justification = "For mocking purposes.")]
 	public class DirectoryCreator : IMicroComponent
 	{
 		#region IMicroComponent Members
 
+		[SuppressMessage("ReSharper", "InvertIf")]
 		public IBaseMessage Execute(IPipelineContext pipelineContext, IBaseMessage message)
 		{
-			message.EnsureFileOutboundTransport();
-			var location = Path.GetDirectoryName(message.GetProperty(BtsProperties.OutboundTransportLocation));
-			if (ImpersonationEnabled)
+			if (message.OutboundTransport().IsFileTransmitter())
 			{
-				if (_logger.IsDebugEnabled) _logger.Debug("Impersonating file adapter's configured user to create directory.");
-				Delegate.InvokeAs(
-					message.GetProperty(FileProperties.Username),
-					message.GetProperty(FileProperties.Password),
-					() => CreateDirectory(location));
-			}
-			else
-			{
-				CreateDirectory(location);
+				var location = Path.GetDirectoryName(message.GetProperty(BtsProperties.OutboundTransportLocation));
+				if (ImpersonationEnabled)
+				{
+					if (_logger.IsDebugEnabled) _logger.Debug("Impersonating file adapter's configured user to create directory.");
+					Delegate.InvokeAs(
+						message.GetProperty(FileProperties.Username),
+						message.GetProperty(FileProperties.Password),
+						() => CreateDirectory(location));
+				}
+				else
+				{
+					CreateDirectory(location);
+				}
 			}
 			return message;
 		}
@@ -55,7 +59,7 @@ namespace Be.Stateless.BizTalk.MicroComponent
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Public API.")]
 		public bool ImpersonationEnabled { get; set; }
 
-		private void CreateDirectory(string location)
+		internal virtual void CreateDirectory(string location)
 		{
 			if (Directory.Exists(location))
 			{
