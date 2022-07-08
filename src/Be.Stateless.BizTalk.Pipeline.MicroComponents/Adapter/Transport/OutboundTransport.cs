@@ -17,6 +17,8 @@
 #endregion
 
 using System;
+using Microsoft.BizTalk.Adapter.SBMessaging;
+using Microsoft.BizTalk.Adapter.Sftp;
 
 namespace Be.Stateless.BizTalk.Adapter.Transport
 {
@@ -45,8 +47,8 @@ namespace Be.Stateless.BizTalk.Adapter.Transport
 		}
 
 		internal static readonly Guid FileTransmitterClassId = new("9d0e4341-4cce-4536-83fa-4a5040674ad6");
-		internal static readonly Guid SBMessagingTransmitterClassId = new("1dc332a4-f68e-48ab-8644-745c8d0f9cc7");
-		internal static readonly Guid SftpTransmitterClassId = new("c166a7e5-4f4c-4b02-a6f2-8be07e1fa786");
+		internal static readonly Guid SBMessagingTransmitterClassId = typeof(SBMessagingTransmitter).GUID;
+		internal static readonly Guid SftpTransmitterClassId = typeof(SftpTransmitter).GUID;
 		private readonly Guid _clsId;
 	}
 }
